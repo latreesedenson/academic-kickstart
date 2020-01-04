@@ -1,19 +1,19 @@
 {
     "collab_server" : "",
     "contents" : "",
-    "created" : 1578110007112.000,
+    "created" : 1578119820818.000,
     "dirty" : false,
     "encoding" : "UTF-8",
     "folds" : "",
-    "hash" : "0",
-    "id" : "A79C59E1",
-    "lastKnownWriteTime" : 1578110203,
-    "last_content_update" : 1578110203297,
+    "hash" : "810303885",
+    "id" : "46F105F",
+    "lastKnownWriteTime" : 1578119933,
+    "last_content_update" : 1578119933501,
     "path" : "~/GitHub/academic-template/content/home/projects.md",
     "project_path" : "content/home/projects.md",
     "properties" : {
-        "cursorPosition" : "34,0",
-        "scrollLine" : "20"
+        "cursorPosition" : "5,10",
+        "scrollLine" : "0"
     },
     "relative_order" : 2,
     "source_on_save" : false,

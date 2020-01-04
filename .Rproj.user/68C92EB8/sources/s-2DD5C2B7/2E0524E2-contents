@@ -86,11 +86,11 @@ phone = "305 421 4316"
 
 # Address
 # For country_code, use the 2-letter ISO code (see https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2 )
-address = {street = "Rosenstiel School of Marine and Atmospheric Science South Grosvenor 4600 Rickenbacker Causeway", city = "Miami", region = "FL", postcode = "33149", country = "United States", country_code = "US"}
+address = {street = "4600 Rickenbacker Causeway", city = "Miami", region = "FL", postcode = "33149", country = "United States", country_code = "US"}
 
 # Geographic coordinates
 # To get your coordinates, right-click on Google Maps and choose "What's here?". The coords will show up at the bottom.
-coordinates = {latitude = "25.732364", longitude = "-80.162850"}
+coordinates = {latitude = "37.4275", longitude = "-122.1697"}
 
 # Directions for visitors to locate you.
 # directions = "Enter Building 1 and take the stairs to Office 200 on Floor 2"

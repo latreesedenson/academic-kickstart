@@ -1,16 +1,16 @@
 +++
-# A Projects section created with the Portfolio widget.
+# An Outreach section created with the Portfolio widget.
 widget = "portfolio"  # See https://sourcethemes.com/academic/docs/page-builder/
 headless = true  # This file represents a page section.
 active = true  # Activate this widget? true/false
-weight = 70  # Order that this section will appear.
+weight = 80  # Order that this section will appear.
 
-title = "Projects"
+title = "Outreach"
 subtitle = ""
 
 [content]
   # Page type to display. E.g. project.
-  page_type = "projects"
+  page_type = "Outreach"
   
   # Filter toolbar (optional).
   # Add or remove as many filters (`[[content.filter_button]]` instances) as you like.
@@ -25,9 +25,9 @@ subtitle = ""
   #   name = "All"
   #   tag = "*"
   
-  #[[content.filter_button]]
-  # name = "Deep Learning"
-  # tag = "Deep Learning"
+   [[content.filter_button]]
+     name = "Deep Learning"
+     tag = "Deep Learning"
   
   # [[content.filter_button]]
   #   name = "Other"
