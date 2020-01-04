@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1578110038978.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "293657908",
+    "id" : "5ED44C27",
+    "lastKnownWriteTime" : 1578110109,
+    "last_content_update" : 1578110109636,
+    "path" : "~/GitHub/academic-template/config/_default/menus.toml",
+    "project_path" : "config/_default/menus.toml",
+    "properties" : {
+        "cursorPosition" : "18,0",
+        "scrollLine" : "11"
+    },
+    "relative_order" : 4,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "toml"
+}
