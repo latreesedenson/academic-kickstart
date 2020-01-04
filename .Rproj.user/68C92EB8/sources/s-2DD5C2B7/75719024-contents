@@ -18,7 +18,7 @@ organizations:
   url: ""
 
 # Short bio (displayed in user profile at end of posts)
-bio: My research focuses on using readily avialale environmental data to inform fluctionations in fish population size over time and space.
+bio: What does a Fisheries Scientist do? A lot! What do I do? A lot, but in simple terms I do the math behind determining how many fish we can catch while sustaining the fish populations for years to come, affectionatly known as stock assessment. My research focuses on using readily avialale environmental data to inform fluctionations in fish population size over time and space.
 
 interests:
 - Population Dynamics
@@ -56,9 +56,9 @@ social:
   link: https://github.com/gcushen
 # Link to a PDF of your resume/CV from the About widget.
 # To enable, copy your resume/CV to `static/files/cv.pdf` and uncomment the lines below.
-# - icon: cv
-#   icon_pack: ai
-#   link: files/cv.pdf
+ - icon: cv
+   icon_pack: ai
+   link: files/cv.pdf
 
 # Enter email to display Gravatar (if Gravatar enabled in Config)
 email: ""

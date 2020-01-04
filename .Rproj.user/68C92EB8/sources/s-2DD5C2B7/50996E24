@@ -1,21 +1,21 @@
 {
     "collab_server" : "",
     "contents" : "",
-    "created" : 1578089560386.000,
+    "created" : 1578108001723.000,
     "dirty" : false,
     "encoding" : "UTF-8",
     "folds" : "",
-    "hash" : "261501201",
-    "id" : "B6254E80",
-    "lastKnownWriteTime" : 1578104944,
-    "last_content_update" : 1578104944448,
+    "hash" : "2109936679",
+    "id" : "50996E24",
+    "lastKnownWriteTime" : 1578108213,
+    "last_content_update" : 1578108213785,
     "path" : "~/GitHub/academic-template/content/authors/admin/_index.md",
     "project_path" : "content/authors/admin/_index.md",
     "properties" : {
-        "cursorPosition" : "49,1",
-        "scrollLine" : "37"
+        "cursorPosition" : "20,5",
+        "scrollLine" : "17"
     },
-    "relative_order" : 2,
+    "relative_order" : 1,
     "source_on_save" : false,
     "source_window" : "",
     "type" : "markdown"
