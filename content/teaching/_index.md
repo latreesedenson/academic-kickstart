@@ -6,12 +6,7 @@ layout: docs
 title: Teaching
 ---
 
-I currently do not teach. I am extremely busy at increasing inter-dimensional traveling. In the past, however, I have taught the following courses:
+I have been a teaching assistant for a courses at North Carolina State and the University of Miami
 
-**PHYS 101** - Intro to Physics  
-*Undergraduate*
-
-**PHYS 201** - General Physics
-*Undergraduate*
-
-Below, I also provide an example of an online course:
+**NC State - Earth System Science**
+-Undergraduate

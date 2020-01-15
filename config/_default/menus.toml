@@ -10,12 +10,12 @@
 
 [[main]]
   name = "Blog"
-  url = "#blog"
+  url = "post/"
   weight = 50
 
 [[main]]
  name = "Projects"
- url = "#projects"
+ url = "project/"
  weight = 30
 
 
@@ -43,5 +43,5 @@
 # To enable, copy your resume/CV to `static/files/cv.pdf` and uncomment the lines below.
  [[main]]
     name = "CV"
-    url = "files/NOAA_StockAssessmentResumeSubmited.pdf"
+    url = "files/NOAAUSAJOBSCV_Jan2020_Stock Assessment.pdf"
     weight = 90
