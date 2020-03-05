@@ -1,13 +1,13 @@
 ---
 date: "2019-12-05T00:00:00Z"
 draft: false
-lastmod: "2019-12-05T00:00:00Z"
+lastmod: "2020-03-04T19:12:00Z"
 linktitle: Applied Environmental Economics 
 menu:
   MES623Econ:
     name: Overview
     weight: 1
-summary: Lab assignments to teach students to use computer programming to conduct economic analysis of environmental problems as well as to derive and communicate policy recommendations.
+summary: Lab assignments to teach students to use R statistical programming  to conduct economic analysis of environmental problems as well as to derive and communicate policy recommendations.
 title: Overview
 toc: false
 type: docs
