@@ -1,0 +1,139 @@
+---
+date: ' 2020-03-05T00:40:56+01:00 '
+draft: false
+linktitle: Lab 3
+menu: 
+     MES623Econ:
+          parent: Lab Material
+          weight: 3
+title:  Simulation
+toc: true
+type: docs
+weight: 3
+---
+
+Say you want to simulate a process such as average rainfall in a year. Chances are the will be some really dry days of the year, and some really wet days of the year. Processes can follow many different distributions. With R you can generate data which represent those different processes. This is called generating or simulating random variables. 
+
+#Simulating Random Variables 
+
+The distribution that explains most natural  processes is the **Normal Distribution**. In this distribution, extreme events are unlikely. The distribution can be used to describe processes like the height of people in a population. Use `rnorm(n,mean,sd)`to generate the random variables. 
+
+```{r, echo = FALSE}
+library(ggplot2)
+normal.dat = rnorm(100000, mean=0, sd=1)
+
+ggplot() +
+```
+
+
+
+The **Uniform Distribution**  is a continuous distribution that gives every value from a minimum to a maximuman an equal chance of occuring. Think of rolling a fair die with 6 sides. The function is `runif(x,min,max)`.
+```{r, echo = FALSE}
+uniform.dat =runif(100,1,6)
+ggplot() + aes(uniform.dat) +
+geom_histogram(binwidth = 1, colour="black", fill="white")
+```
+
+
+
+
+The **Poisson Distribution**  is a discrete distribution that describes the number of times an event occurs in a given interval, such as the number of telephone calls per minute (non-negative integers). The function to generate these types of values is `rpois(x,lambda)`. Lambda is the mean occurence per interval.
+```{r, echo = FALSE}
+poisson.dat = rpois(n=1000,lambda=12)
+
+ggplot()+
+```
+
+
+
+
+**Exercise 1:** Generate data for the following scenarios and graph the distributions. For part a increase the `n` argument to 1e5, then take the average (`mean()`) and standard deviation (`sd()`) of that sample. Notice anything?
+
+**A.** The distribution of rainfall over 365 days if the average amount of rainfall is 10 inches and the standard deviation is 2.5.
+
+**B.** The distribution of 100 people spinning a spinner with 8 equally sized sections.
+
+```{r, eval = FALSE}
+# Use this code to graph your distribution
+library(ggplot2) # load the ggplot library
+
+dist.data =distribution() # 1. generate the distribution and save it as an object
+
+ggplot() + aes(dist.data) + # 2. Graph the distribution you just created
+
+# 3. Experiment with how things look
+geom_histogram(binwidth = 1, colour="black", fill="white") 
+```
+
+**Note:** There are many other distributions in R this is just giving you a taste of what is out there. In the future, you can use Google to find the function name of the distribution that matches the error structure of your data the best. Prefixes are applied to the distribution functions for different utilities:
+
+* `d` for "density" evaluates the probability density function (Ex: `dnorm`)
+
+* `r` for "random" draws random variables from the distribution (Ex: `rnorm`) 
+
+* `p` for "probability" evaluates the cumulative distribution function, cdf (Ex: `pnorm`)
+
+* `q` for "quantile" evaluates the inverse cdf (Ex:`qnorm`)
+
+# Sampling From a Distribution
+You generated data for a process now let's take some of those values. We do this by using the function `sample()`. Out of those 365 days of rainfall, let's take a 5-day sample. Do this multiple times. Notice anything?
+
+```{r, eval = FALSE}
+rain = rnorm(365,10,2.5)
+rain.samp = sample(rain,replace = TRUE, size = 5)
+sd(rain.samp)
+```
+**ProTip:** You can also use the sample function to grab random numbers from a sequence of numbers.
+
+If we wanted to replicate this same draw of random numbers we need to set the random number generation seed. This can be any positive integer. 
+
+**Exercise 2:** Run `set.seed(23)`, generate the random variables (rvs) again, and then generate the rvs one more time under a different object name. Compare the objects. Are they the same?
+
+#**All together** 
+**Exercise 3:** 
+
+**A.** Using the R features we have learned about over the past 2 weeks, simulate a demand curve with random normal error around the price and the final quantity. Graph the resulting demand curve using the following demand curve equation and label the grpah ("demand" & axes):
+$$Q=-.4P+50$$
+**B.** Randomly sample 4 prices from the generated curve, determine the quantity demanded for each price, and label the points on individual graphs. (Hint: Functions and/or loops can help reduce the amount of code you write)
+
+```{r}
+# A ---------------------------------------
+library(ggplot2)
+set.seed(45) # set the seed so our numbers are able to be replicated
+
+prices = seq(1,100,by= 5) # generate a vector of prices
+p_n = length(prices) # save the length as an object to be used later
+r.prices =  rnorm(p_n,prices,5) # generate random error around the prices 
+
+# Create a function to calculate quantity on the demand curve 
+# ... only useful if you are changing the slopw and intercept 
+# constantly which you might do in workouts
+
+eval = function(slope = -.4,intercept=50,p =10) 
+
+# Use the eval function to calculate quantities and add random error
+r.quant = rnorm(p_n,eval(p = r.prices),1) 
+
+# Create a dataframe to use in ggplot
+r.dem = as.data.frame(cbind(r.prices,r.quant))
+
+# Plot the demand curve 
+Plot.OG = ggplot(r.dem, aes(x = r.quant, y = r.prices)) +  # input the data and identify x and y
+Plot.OG
+
+# B -----------------------------------------------------------
+
+n.samples = sample(r.prices,4) # take 4 samples from the random prices
+
+# Create a function to determine the quantity demanded for each price, 
+# and label the points on individual graphs
+graph.samp.fun = function(price = 10) 
+}
+
+graph.samp.fun() # test the function
+
+graph.samp.fun(price = n.samples[2]) # Use the function to graph each of the 4 sampled prices  
+
+
+```
+
