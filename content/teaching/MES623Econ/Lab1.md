@@ -97,9 +97,9 @@ library(tidyverse)
 **Note:** If you are ever wondering how to use these packages check out the cheat sheets:
 
 
-[dplyr cheat sheet](https://www.rstudio.com/wp-content/uploads/2015/03/ggplot2-cheatsheet.pdf)
+[ggplot2 cheat sheet](https://www.rstudio.com/wp-content/uploads/2015/03/ggplot2-cheatsheet.pdf)
 
-[ggplot2 cheat sheet](https://ugoproto.github.io/ugo_r_doc/dplyr.pdf)
+[dplyr and tidyr cheat sheet](https://rstudio.com/wp-content/uploads/2015/02/data-wrangling-cheatsheet.pdf)
 
 ... or Google it!
 

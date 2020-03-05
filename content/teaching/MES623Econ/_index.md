@@ -2,7 +2,7 @@
 date: "2019-12-05T00:00:00Z"
 draft: false
 lastmod: "2020-03-04T19:12:00Z"
-linktitle: Applied Environmental Economics 
+linktitle: Graduate Applied Environmental Economics - Spring 2019 
 menu:
   MES623Econ:
     name: Overview
