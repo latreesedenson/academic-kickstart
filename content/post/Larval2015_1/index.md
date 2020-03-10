@@ -1,6 +1,6 @@
 ---
 title: 'Fish on!'
-subtitle: ''
+subtitle: 'Trying page bundles'
 summary: First Day at Sea.
 authors:
 - admin
@@ -33,6 +33,4 @@ projects: []
 
 What an interesting day. First off, I made it to breakfast, Yaaaayy! We had French toast, sausage and ham and eggs. We are still working our way off of the shelf, still steaming along. Work (collecting samples) should start about 8:00am or 9:00am tomorrow. Since I am on the night shift, I will be on the first team up. The day team works from 12:00 noon until midnight, then I am up again.
 
-{{< figure src="C:/Users/lxd312/Documents/GitHub/academic-template/content/post/Larval2015_1/navigation.jpg" title="Trying." >}}
-
-![The red circle shows the boat. All of the black boxes are the numerous oil rigs out here, pretty tough to navigate especially at night](/content/post/navigation.jpg)
+{{< figure src="navigation.jpg" title="The red circle shows the boat. All of the black boxes are the numerous oil rigs out here, pretty tough to navigate especially at night." >}}
