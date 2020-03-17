@@ -1,0 +1,331 @@
+---
+date: '2020-03-17T13:14:33'
+draft: false
+linktitle: Lab 1
+menu: 
+     MES623Econ:
+          parent: Lab Material
+          weight: 1
+title: R Intro
+type: docs
+weight: 1
+---
+
+
+
+<div id="installation" class="section level1">
+<h1>Installation</h1>
+<ol style="list-style-type: decimal">
+<li>Click <a href="https://cran.r-project.org">here</a> to download R.</li>
+<li>Click <a href="https://www.rstudio.com/products/rstudio/">here</a> to download “RStudio,” the Integrated Development Environment (IDE) that allows users to interact with R.</li>
+</ol>
+</div>
+<div id="determine-set-and-create-directories" class="section level1">
+<h1>Determine, Set, and Create Directories</h1>
+<p>Determine which directory you are in:</p>
+<pre class="r"><code>getwd()</code></pre>
+<p><strong>ProTip:</strong> Use <code>Ctrl + Enter</code> (Windows) or <code>Cmd + Enter</code> (Mac) to run the current line of code using a keyboard shortcut.</p>
+<p>Not the right directory? That’s fine–let’s change it!<br />
+To change or set the directory in R use the setwd() function.</p>
+<p>For example, to set the directory to a specific folder:</p>
+<ol style="list-style-type: decimal">
+<li>From your desktop or start menu, navigate to the folder you wish to save in, and open it.</li>
+<li>Right-click in any empty space inside the folder, select properties.</li>
+<li>Select and copy the location (e.g. “C:\\Users\\username\\Desktop”).</li>
+<li>Paste the location name inside the setwd() parentheses and add your file name (e.g.“\\MES623_Lab”).</li>
+</ol>
+<pre class="r"><code>setwd(&quot;/Users/username/Desktop/MES623_Lab&quot;)</code></pre>
+<p><strong>Note:</strong> In this character string, you can only use a “/” or “\\” between folder names.<br />
+To keep things tidy, create another folder specifically for today’s lab. This can be done by creating the object “todays.file” where you will change the name from day to day.</p>
+<pre class="r"><code>todays.file = &quot;Lab_1&quot;</code></pre>
+<pre class="r"><code>dir.create(todays.file)</code></pre>
+<p>Set the directory to <code>todays.file</code> to keep things saved in the right place.</p>
+<pre class="r"><code>setwd(todays.file)</code></pre>
+<p><strong>ProTip:</strong> R does not like spaces. Use underscores instead.</p>
+<p>Check to see if you are in the right place using <code>getwd()</code>, then use the function <code>dir()</code> to see what is in the folder.</p>
+<p><strong>ProTip:</strong> Messed up? Want to move up one directory? No problem! Run <code>setwd("..")</code>."</p>
+<p>Good to go? Let’s move on.</p>
+</div>
+<div id="install-and-load-packages" class="section level1">
+<h1>Install and Load Packages</h1>
+<p>There are millions of R packages designed to do all kinds of data analyses. Two packages that I have grown fond of for manipulating and visualizing data are <code>dplyr</code> and <code>ggplot2</code>. Fortunately, somebody decided to bundle these packages and a few others in what is called the <code>tidyverse</code>. We can install each package individually using the <code>install.packages()</code> function or we can just install the <code>tidyverse</code> package.</p>
+<p><strong>dplyr:</strong> a package for data manipulation</p>
+<p><strong>ggplot2:</strong> a package for creating graphics</p>
+<p><strong>tidyverse:</strong> the data analyses super package!</p>
+<pre class="r"><code># Your install options
+install.packages(&quot;ggplot2&quot;)
+install.packages(c(&quot;ggplot2&quot;,&quot;dplyr&quot;))
+
+# All necessary packages can be installed using this line
+install.packages(&quot;tidyverse&quot;)</code></pre>
+<p><strong>Note:</strong> Installing the package only needs to be done once.</p>
+<p>Load the package every time a new R session is started using the <code>library()</code> function.</p>
+<pre><code>## -- Attaching packages ---------------------------------------------------- tidyverse 1.3.0 --</code></pre>
+<pre><code>## v ggplot2 3.2.1     v purrr   0.3.3
+## v tibble  2.1.3     v dplyr   0.8.3
+## v tidyr   1.0.0     v stringr 1.4.0
+## v readr   1.3.1     v forcats 0.4.0</code></pre>
+<pre><code>## -- Conflicts ------------------------------------------------------- tidyverse_conflicts() --
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()</code></pre>
+<p><strong>Note:</strong> If you are ever wondering how to use these packages check out the cheat sheets:</p>
+<p><a href="https://rstudio.com/wp-content/uploads/2015/02/data-wrangling-cheatsheet.pdf">dplyr and tidyr cheat sheet</a></p>
+<p><a href="https://rstudio.com/wp-content/uploads/2016/11/ggplot2-cheatsheet-2.1.pdf">ggplot2 cheat sheet</a></p>
+<p>… or Google it!</p>
+</div>
+<div id="data-load-explore-manipulate-export-and-visualize" class="section level1">
+<h1>Data: Load, Explore, Manipulate, Export, and Visualize</h1>
+<div id="load-data" class="section level3">
+<h3>Load Data</h3>
+<p>Download the <a href="https://vincentarelbundock.github.io/Rdatasets/csv/datasets/mtcars.csv">mtcars</a> data set and save it to the newly created lab folder as a .csv file:</p>
+<p>Now read it in using the function <code>read.csv()</code> and give it the object name <code>data</code>:</p>
+<pre class="r"><code>data = read.csv(&quot;mtcars.csv&quot;)</code></pre>
+</div>
+<div id="explore-data" class="section level3">
+<h3>Explore Data</h3>
+<p>Make sure the data was read in correctly using the function <code>head()</code>.</p>
+<pre class="r"><code>head(data)</code></pre>
+<pre><code>##                   X  mpg cyl disp  hp drat    wt  qsec vs am gear carb
+## 1         Mazda RX4 21.0   6  160 110 3.90 2.620 16.46  0  1    4    4
+## 2     Mazda RX4 Wag 21.0   6  160 110 3.90 2.875 17.02  0  1    4    4
+## 3        Datsun 710 22.8   4  108  93 3.85 2.320 18.61  1  1    4    1
+## 4    Hornet 4 Drive 21.4   6  258 110 3.08 3.215 19.44  1  0    3    1
+## 5 Hornet Sportabout 18.7   8  360 175 3.15 3.440 17.02  0  0    3    2
+## 6           Valiant 18.1   6  225 105 2.76 3.460 20.22  1  0    3    1</code></pre>
+<p><strong>ProTip:</strong> Not sure what a function does? Type <code>?head()</code> into the console and see what pops up in the help menu. Scroll down to the bottom–there are often examples of how to use the function that you can practice with.</p>
+<p>Looks good to me!</p>
+<p>What if we want to see the first eleven rows of the dataset?</p>
+<pre class="r"><code>head(data, n = 11)</code></pre>
+<pre><code>##                    X  mpg cyl  disp  hp drat    wt  qsec vs am gear carb
+## 1          Mazda RX4 21.0   6 160.0 110 3.90 2.620 16.46  0  1    4    4
+## 2      Mazda RX4 Wag 21.0   6 160.0 110 3.90 2.875 17.02  0  1    4    4
+## 3         Datsun 710 22.8   4 108.0  93 3.85 2.320 18.61  1  1    4    1
+## 4     Hornet 4 Drive 21.4   6 258.0 110 3.08 3.215 19.44  1  0    3    1
+## 5  Hornet Sportabout 18.7   8 360.0 175 3.15 3.440 17.02  0  0    3    2
+## 6            Valiant 18.1   6 225.0 105 2.76 3.460 20.22  1  0    3    1
+## 7         Duster 360 14.3   8 360.0 245 3.21 3.570 15.84  0  0    3    4
+## 8          Merc 240D 24.4   4 146.7  62 3.69 3.190 20.00  1  0    4    2
+## 9           Merc 230 22.8   4 140.8  95 3.92 3.150 22.90  1  0    4    2
+## 10          Merc 280 19.2   6 167.6 123 3.92 3.440 18.30  1  0    4    4
+## 11         Merc 280C 17.8   6 167.6 123 3.92 3.440 18.90  1  0    4    4</code></pre>
+<p>What if we want to see the bottom 5 rows of the dataset?</p>
+<pre class="r"><code>tail(data, n = 5)</code></pre>
+<pre><code>##                 X  mpg cyl  disp  hp drat    wt qsec vs am gear carb
+## 28   Lotus Europa 30.4   4  95.1 113 3.77 1.513 16.9  1  1    5    2
+## 29 Ford Pantera L 15.8   8 351.0 264 4.22 3.170 14.5  0  1    5    4
+## 30   Ferrari Dino 19.7   6 145.0 175 3.62 2.770 15.5  0  1    5    6
+## 31  Maserati Bora 15.0   8 301.0 335 3.54 3.570 14.6  0  1    5    8
+## 32     Volvo 142E 21.4   4 121.0 109 4.11 2.780 18.6  1  1    4    2</code></pre>
+<p>What are the column names?</p>
+<pre class="r"><code>names(data)</code></pre>
+<pre><code>##  [1] &quot;X&quot;    &quot;mpg&quot;  &quot;cyl&quot;  &quot;disp&quot; &quot;hp&quot;   &quot;drat&quot; &quot;wt&quot;   &quot;qsec&quot; &quot;vs&quot;   &quot;am&quot;  
+## [11] &quot;gear&quot; &quot;carb&quot;</code></pre>
+<p>What are the dimensions of the dataset, how many rows and columns?</p>
+<pre class="r"><code>dim(data)</code></pre>
+<pre><code>## [1] 32 12</code></pre>
+<p>Last but not least, summerize the data using the function <code>summary()</code>.</p>
+<pre class="r"><code>summary(data)</code></pre>
+<pre><code>##                   X           mpg             cyl             disp      
+##  AMC Javelin       : 1   Min.   :10.40   Min.   :4.000   Min.   : 71.1  
+##  Cadillac Fleetwood: 1   1st Qu.:15.43   1st Qu.:4.000   1st Qu.:120.8  
+##  Camaro Z28        : 1   Median :19.20   Median :6.000   Median :196.3  
+##  Chrysler Imperial : 1   Mean   :20.09   Mean   :6.188   Mean   :230.7  
+##  Datsun 710        : 1   3rd Qu.:22.80   3rd Qu.:8.000   3rd Qu.:326.0  
+##  Dodge Challenger  : 1   Max.   :33.90   Max.   :8.000   Max.   :472.0  
+##  (Other)           :26                                                  
+##        hp             drat             wt             qsec      
+##  Min.   : 52.0   Min.   :2.760   Min.   :1.513   Min.   :14.50  
+##  1st Qu.: 96.5   1st Qu.:3.080   1st Qu.:2.581   1st Qu.:16.89  
+##  Median :123.0   Median :3.695   Median :3.325   Median :17.71  
+##  Mean   :146.7   Mean   :3.597   Mean   :3.217   Mean   :17.85  
+##  3rd Qu.:180.0   3rd Qu.:3.920   3rd Qu.:3.610   3rd Qu.:18.90  
+##  Max.   :335.0   Max.   :4.930   Max.   :5.424   Max.   :22.90  
+##                                                                 
+##        vs               am              gear            carb      
+##  Min.   :0.0000   Min.   :0.0000   Min.   :3.000   Min.   :1.000  
+##  1st Qu.:0.0000   1st Qu.:0.0000   1st Qu.:3.000   1st Qu.:2.000  
+##  Median :0.0000   Median :0.0000   Median :4.000   Median :2.000  
+##  Mean   :0.4375   Mean   :0.4062   Mean   :3.688   Mean   :2.812  
+##  3rd Qu.:1.0000   3rd Qu.:1.0000   3rd Qu.:4.000   3rd Qu.:4.000  
+##  Max.   :1.0000   Max.   :1.0000   Max.   :5.000   Max.   :8.000  
+## </code></pre>
+<p>Here we have information about the minimum and the maximum from each column.</p>
+<p>We often just want to know about one variable. To grab a single variable in R (from a data frame or matrix), use the $. To grab the horsepower (hp) from the mtcars dataset type data$hp. To summarize the horsepower variable:</p>
+<pre class="r"><code>summary(data$hp)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##    52.0    96.5   123.0   146.7   180.0   335.0</code></pre>
+</div>
+<div id="manipulate-data" class="section level3">
+<h3>Manipulate Data</h3>
+<p>What if we only cared about the car name (X), the miles per gallon (mpg), the number of cylinders on the engine (cyl), what kind of transmission it was (am), the weight (wt), and the gross horsepower (hp)?</p>
+<p>We could subset the data and create a new object using the <code>select()</code> function in the package dplyr. I also show how to do this manipulation using base R (no package).</p>
+<pre class="r"><code>data_sub = select(data,X,mpg,cyl, hp, wt, am)
+
+# Check the data
+head(data_sub)</code></pre>
+<pre><code>##                   X  mpg cyl  hp    wt am
+## 1         Mazda RX4 21.0   6 110 2.620  1
+## 2     Mazda RX4 Wag 21.0   6 110 2.875  1
+## 3        Datsun 710 22.8   4  93 2.320  1
+## 4    Hornet 4 Drive 21.4   6 110 3.215  0
+## 5 Hornet Sportabout 18.7   8 175 3.440  0
+## 6           Valiant 18.1   6 105 3.460  0</code></pre>
+<pre class="r"><code># Using Base R
+data_sub_Old = data[,c(&quot;X&quot;,&quot;mpg&quot;,&quot;cyl&quot;,&quot;hp&quot;,&quot;wt&quot;,&quot;am&quot;)]
+
+# Check the data
+head(data_sub_Old)</code></pre>
+<pre><code>##                   X  mpg cyl  hp    wt am
+## 1         Mazda RX4 21.0   6 110 2.620  1
+## 2     Mazda RX4 Wag 21.0   6 110 2.875  1
+## 3        Datsun 710 22.8   4  93 2.320  1
+## 4    Hornet 4 Drive 21.4   6 110 3.215  0
+## 5 Hornet Sportabout 18.7   8 175 3.440  0
+## 6           Valiant 18.1   6 105 3.460  0</code></pre>
+<p>We get the same answer!</p>
+<p>Let’s arrange by mpg, smallest to largest (asending order). Here we use the <code>arrange()</code> function in dplyr. Asending order is the default for arrange; if we wanted desending we would use the function <code>desc()</code>.
+Remember to save this arranged table to an object (e.g. data_sub_mpg)</p>
+<pre class="r"><code>data_mpg = arrange(data_sub,desc(mpg))
+
+#check the data
+head(data_mpg)</code></pre>
+<pre><code>##                X  mpg cyl  hp    wt am
+## 1 Toyota Corolla 33.9   4  65 1.835  1
+## 2       Fiat 128 32.4   4  66 2.200  1
+## 3    Honda Civic 30.4   4  52 1.615  1
+## 4   Lotus Europa 30.4   4 113 1.513  1
+## 5      Fiat X1-9 27.3   4  66 1.935  1
+## 6  Porsche 914-2 26.0   4  91 2.140  1</code></pre>
+<pre class="r"><code># Using Base R
+data_mpg_Old = data_sub_Old[order(-data_sub_Old$mpg),]
+
+#check the data
+head(data_mpg_Old)</code></pre>
+<pre><code>##                 X  mpg cyl  hp    wt am
+## 20 Toyota Corolla 33.9   4  65 1.835  1
+## 18       Fiat 128 32.4   4  66 2.200  1
+## 19    Honda Civic 30.4   4  52 1.615  1
+## 28   Lotus Europa 30.4   4 113 1.513  1
+## 26      Fiat X1-9 27.3   4  66 1.935  1
+## 27  Porsche 914-2 26.0   4  91 2.140  1</code></pre>
+<p>Looks like my Corolla beats everybody!</p>
+<p>I can’t drive a manual so I only want an automatic transmission (<code>am = 0</code>), but I still want a car that has a good mpg. This can be done using the <code>filter()</code> function in dplyr on the data we just sorted.</p>
+<pre class="r"><code>auto_data = filter(data_mpg,am == &quot;0&quot; )
+
+#check the data
+head(auto_data)</code></pre>
+<pre><code>##                  X  mpg cyl  hp    wt am
+## 1        Merc 240D 24.4   4  62 3.190  0
+## 2         Merc 230 22.8   4  95 3.150  0
+## 3    Toyota Corona 21.5   4  97 2.465  0
+## 4   Hornet 4 Drive 21.4   6 110 3.215  0
+## 5         Merc 280 19.2   6 123 3.440  0
+## 6 Pontiac Firebird 19.2   8 175 3.845  0</code></pre>
+<pre class="r"><code># Using base R
+# Think of this as rows where am is equal to &quot;0&quot;
+auto_data_Old = data_mpg_Old[data_mpg_Old$am ==&quot;0&quot;,]
+
+head(auto_data_Old)</code></pre>
+<pre><code>##                   X  mpg cyl  hp    wt am
+## 8         Merc 240D 24.4   4  62 3.190  0
+## 9          Merc 230 22.8   4  95 3.150  0
+## 21    Toyota Corona 21.5   4  97 2.465  0
+## 4    Hornet 4 Drive 21.4   6 110 3.215  0
+## 10         Merc 280 19.2   6 123 3.440  0
+## 25 Pontiac Firebird 19.2   8 175 3.845  0</code></pre>
+<p><strong>Note:</strong> <code>==</code> is a <a href="https://www.statmethods.net/management/operators.html">logical operator</a>. It poses the question – is something “exactly equal to” something else? We are looking for the rows where <code>am</code> is “exactly equal to” 0.</p>
+<p><strong>All together now!</strong> Use the pipe operator <code>%&gt;%</code> from the magrittr package within the tidyverse package. This syntax leads to code that is easier to write and to read.USe the keyboard shortcut: <code>Ctrl + Shift + M</code> (Windows) or <code>Cmd + Shift + M</code> (Mac).</p>
+<pre class="r"><code>All_auto_data = data_sub %&gt;% arrange(desc(mpg)) %&gt;% filter(am == &quot;0&quot;)
+
+head(All_auto_data)</code></pre>
+<pre><code>##                  X  mpg cyl  hp    wt am
+## 1        Merc 240D 24.4   4  62 3.190  0
+## 2         Merc 230 22.8   4  95 3.150  0
+## 3    Toyota Corona 21.5   4  97 2.465  0
+## 4   Hornet 4 Drive 21.4   6 110 3.215  0
+## 5         Merc 280 19.2   6 123 3.440  0
+## 6 Pontiac Firebird 19.2   8 175 3.845  0</code></pre>
+</div>
+<div id="export-data" class="section level3">
+<h3>Export Data</h3>
+<p>We want save this newly manipulated data to a csv file on our hard drive. This is done using the function <code>write.csv()</code></p>
+<pre class="r"><code>write.csv(All_auto_data,&quot;AutomaticTrans.csv&quot;, row.names = FALSE)</code></pre>
+<p><strong>Note:</strong> Don’t forget the quotes around the file name and the <code>.csv</code> in the file name. If you don’t put <code>row.names = FALSE</code> you will have row numbers printed in your excel file.</p>
+</div>
+<div id="visualize-data" class="section level3">
+<h3>Visualize Data</h3>
+<p><strong><em>I show how to do all visualizations in ggplot and base R.</em></strong></p>
+<p>Let’s look at our original data set and draw a scatter plot.</p>
+<pre class="r"><code>ggplot(data = data, mapping = aes(x = wt, y = mpg)) + geom_point()</code></pre>
+<p><img src="/teaching/MES623Econ/Lab_1_Spr19_R_Intro_files/figure-html/unnamed-chunk-22-1.png" width="672" /></p>
+<pre class="r"><code># Base R
+plot(data$wt, data$mpg, pch=19, ylab = &quot;mpg&quot;, xlab =&quot;wt&quot;) </code></pre>
+<p><img src="/teaching/MES623Econ/Lab_1_Spr19_R_Intro_files/figure-html/unnamed-chunk-22-2.png" width="672" /></p>
+<p>Lets add a smooth line using <code>stat_smooth()</code>.</p>
+<pre class="r"><code>ggplot(data = data, mapping = aes(x = wt, y = mpg)) + geom_point() + 
+  stat_smooth(method = &#39;lm&#39;)</code></pre>
+<p><img src="/teaching/MES623Econ/Lab_1_Spr19_R_Intro_files/figure-html/unnamed-chunk-23-1.png" width="672" /></p>
+<pre class="r"><code>#Base R
+plot(data$wt, data$mpg, pch=19, ylab = &quot;mpg&quot;, xlab =&quot;wt&quot;) 
+abline(lm(data$mpg~data$wt), col=&quot;slateblue&quot;)</code></pre>
+<p><img src="/teaching/MES623Econ/Lab_1_Spr19_R_Intro_files/figure-html/unnamed-chunk-23-2.png" width="672" /></p>
+<p>Use the <code>facet_wrap()</code> function to seperate graphs by the level of a certain factor–cyl in our case.</p>
+<pre class="r"><code>ggplot(data = data, mapping = aes(x = wt, y = mpg)) + geom_point() + 
+stat_smooth(method = &#39;lm&#39;) + facet_wrap(~ cyl)</code></pre>
+<p><img src="/teaching/MES623Econ/Lab_1_Spr19_R_Intro_files/figure-html/unnamed-chunk-24-1.png" width="672" /></p>
+<pre class="r"><code># Base R
+# 1st subset the data, change the graphical prameters, then plot the seperate graphs
+cyl_4 = data %&gt;% filter(cyl == &quot;4&quot;)
+cyl_6 = data %&gt;% filter(cyl == &quot;6&quot;)
+cyl_8 = data %&gt;% filter(cyl == &quot;8&quot;)
+
+par(mfrow = c(1,3))
+plot(cyl_4$wt, cyl_4$mpg, pch=19, ylab = &quot;mpg&quot;, xlab =&quot;wt&quot;) 
+abline(lm(cyl_4$mpg~cyl_4$wt), col=&quot;slateblue&quot;)
+
+plot(cyl_6$wt,cyl_6 $mpg, pch=19, ylab = &quot;mpg&quot;, xlab =&quot;wt&quot;) 
+abline(lm(cyl_6 $mpg~cyl_6 $wt), col=&quot;slateblue&quot;)
+
+plot(cyl_8$wt, cyl_8$mpg, pch=19, ylab = &quot;mpg&quot;, xlab =&quot;wt&quot;) 
+abline(lm(cyl_8$mpg~cyl_8$wt), col=&quot;slateblue&quot;)</code></pre>
+<p><img src="/teaching/MES623Econ/Lab_1_Spr19_R_Intro_files/figure-html/unnamed-chunk-24-2.png" width="672" /></p>
+<pre class="r"><code>#Reset graphic parameters
+par(mfrow = c(1,1))
+# dev.off() # to start graphing in a totally new device </code></pre>
+<p><strong>ProTip:</strong> Remember to use <code>dev.off()</code> or reset the graphic parameters if not, all of your graphs will print in the (1, 3) format.</p>
+<p><strong>Note:</strong> The range of the X-axes are the same using ggplot2 across number of cylinders but not for base R. The ggplot2 graphic is a lot easier to understand quickly.</p>
+<p>Attempt a box plot using the <code>geom_boxplot()</code> function.</p>
+<pre class="r"><code>ggplot(data, aes(x=as.factor(cyl), y=mpg)) + 
+geom_boxplot(fill=&quot;slateblue&quot;, alpha=0.2) + xlab(&quot;cyl&quot;)</code></pre>
+<p><img src="/teaching/MES623Econ/Lab_1_Spr19_R_Intro_files/figure-html/unnamed-chunk-25-1.png" width="672" /></p>
+<pre class="r"><code># Base R
+boxplot(mpg~cyl,data=data,xlab=&quot;cyl&quot;, ylab=&quot;mpg&quot;) </code></pre>
+<p><img src="/teaching/MES623Econ/Lab_1_Spr19_R_Intro_files/figure-html/unnamed-chunk-25-2.png" width="672" /></p>
+<p>Attempt a histogram of the data using the <code>geom_histogram()</code> function. Change the binwidth to see what happens.</p>
+<pre class="r"><code>ggplot(data, aes(x = mpg)) + geom_histogram(binwidth = 1)</code></pre>
+<p><img src="/teaching/MES623Econ/Lab_1_Spr19_R_Intro_files/figure-html/unnamed-chunk-26-1.png" width="672" /></p>
+<pre class="r"><code># Base R
+hist(data$mpg, breaks=34, col=&quot;darkgrey&quot;, main = &quot;&quot;, xlab=&quot;mpg&quot;) </code></pre>
+<p><img src="/teaching/MES623Econ/Lab_1_Spr19_R_Intro_files/figure-html/unnamed-chunk-26-2.png" width="672" /></p>
+</div>
+</div>
+<div id="final-protips" class="section level1">
+<h1>Final ProTips</h1>
+<ol style="list-style-type: decimal">
+<li>Comment your code! ( Use the hashtag # )</li>
+<li>R is case-sensitive. For example, <code>head()</code> is not the same as <code>Head()</code>.</li>
+<li>Be smart when naming files, folders, etc.. You will be looking for them later. Adding the date or sequential numbers to a folder name is helpful.</li>
+</ol>
+</div>
+<div id="additional-resources" class="section level1">
+<h1>Additional Resources</h1>
+<p><a href="http://edrub.in/ARE212/resources.html">Ed Rubin’s Econometrics Course Notes</a><a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a></p>
+<p><a href="https://www.statmethods.net/">Quick-R By DataCamp</a></p>
+<p><a href="https://serialmentor.com/dataviz/">Fundamentals of Data Visualization</a></p>
+</div>
+<div class="footnotes">
+<hr />
+<ol>
+<li id="fn1"><p>The flow and content included in this document were heavily inspired by Ed Rubin’s course notes.<a href="#fnref1" class="footnote-back">↩</a></p></li>
+</ol>
+</div>
