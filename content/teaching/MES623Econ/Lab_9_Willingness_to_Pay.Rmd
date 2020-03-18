@@ -1,0 +1,240 @@
+---
+date: ' 2020-03-18T17:01:20 '
+draft: false
+linktitle: Lab 9
+menu: 
+     MES623Econ:
+          parent: Lab Material
+          weight: 9
+title:  Willingness to Pay'
+type: docs
+weight: 9
+output:
+  blogdown::html_page:
+    toc: true
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+#knitr::opts_knit$set(root.dir = 'C:\\Users\\lxd312\\Box\\MES623_Lab\\Lab_8')
+```
+### Derive Willingness to Pay (WTP)
+
+
+**Continuing with our example from last week, we want to use the model below to say something about the value of climate change legislation.**
+
+$$Vote = \alpha+ \beta_{1}PerAbate + \beta_{2}Tax + \beta_{3}Income + \beta_{4}Age$$
+
+Basically, we are asking the question -- what is the function for a **change** in the value of climate legislation, given the restrictions of a tax and the benefit of percent abatement? 
+
+When we discuss change, it often implies taking the derivative. When we take the derivative of a function with two variables, we can take the derivative of a function with respects to one variable or the other. This is known as a partial derivative. In other words: $$WTP = \frac{d f(PerAbate,Tax)}{d PerAbate}$$
+
+1. If WTP is a function of PerAbate and Tax, we first solve for $Tax$ by bringing it to the left side of the equal sign, bringing $Vote$ to the right, and dividing by $\beta_{2}$:
+
+$$-\beta_{2}Tax = -Vote + \alpha +\beta_{1}PerAbate + \beta_{3}Income + \beta_{4}Age$$
+
+$$-Tax = \frac{-Vote + alpha +\beta_{1}PerAbate + \beta_{3}Incomelevel + \beta_{4}Age}{\beta_{2}}$$
+
+2. We want to find the change in Tax with respect to Percent Abatement, so we take the partial derivative of Tax with respects to Percent Abatement, $\frac{\partial}{\partial PerAbate}$. If you don't remember partial derivatives there are just three things to know. 
+
+    a) Remember what variable you are taking the derivative from. 
+    b) If you are taking a derivative of a term, and the term in the equation does not have the variable you are taking the derivative from, then we treat it as a constant. 
+    c) The derivative of a constant is zero. 
+
+With that said, terms that do not have $PerAbate$ in them become zero.
+
+$$-\frac{\partial Tax}{\partial PerAbate} = 0 + 0 + \frac{\beta_{1}}{\beta_{2}}\frac{d}{d PerAbate} + 0 + 0$$ 
+
+3. Last but not least, we want a positive partial derivative, so we change the signs on both sides of the equation, or multiply both sides by negative one.
+
+$$\frac{\partial Tax}{\partial PerAbate} = -\frac{\beta_{1}}{\beta_{2}} \Delta PerAbate$$ 
+
+Percent Abatement is a reduction in pollution, which is a way to support climate change legislation. Our results from last week, a positive coefficient for percent abatement, suggest that as percent abatement increases, the probability of voting for climate change legislation increases. The marginal value of the climate change legislation or WTP is equal to the equation above, where $\Delta PerAbate$ is the amount of pollution reduction that will affect the value of climate change legislation when considering the Tax.
+
+### Calculate Willingness to Pay
+
+**Now, given an actual value of $PerAbate$ equal to 70%, let's calculate willingness to pay, on average in taxes. **
+
+Again, using our original linear model equation we solve for $Tax$: Multiply through by negative one, and then divide by $\beta_{2}$.
+
+$$Tax = \frac{y-(\alpha + \beta_{1}PerAbate + \beta_{3}Incomelevel + \beta_{4}Age)}{\beta_{2}}$$
+
+Now we determine how much are people willing to pay in order to tip the scale and move from being indifferent about the legislation (vote = 0.5) to saying 'Yes' (or no) more often. This means $Vote$ in our function is set at 0.5. This is our new equation:
+
+$$Tax = \frac{0.5 -(\alpha + \beta_{1}PerAbate + \beta_{3}Incomelevel + \beta_{4}Age)}{\beta_{2}}$$
+
+Given that we have a goal of 70% abatement, we can use a combination of our model and our data to solve for WTP in terms of tax. Because we may want to adjust the percent abatement, but we don't want to run a bunch of code each time, we can use a function where percent abatement is an argument that can change. Remember our function format:
+
+```{r, eval = FALSE}
+# Function Format
+
+# Using this function our data, our coefficients, and percent abatement can all change without much hassle.
+
+solve.wtp = function(Data,beta,PerAbate)
+  {
+  #read in data
+  #read in coefficients
+  
+  #Solve our WTP equation
+
+  #return WTP  
+  } # End function
+```
+
+Let's input our WTP equation into our function.
+```{r,eval = FALSE}
+WTP = (0.5 - (intercept + beta_1*PerAbate + beta_3 + beta_4 ))/beta_2
+```
+
+#### Building our Function
+
+Let's read in the data and assign each covariate to an object. Reading in the data does not happen inside of our function -- this is just for development and testing purposes. 
+```{r}
+Data = read.csv("ClimateChangeVote.csv")
+head(Data)
+
+# Assign values for each of the covariates (this goes inside our function)
+  IncomeL = Data[4]
+  Age = Data[5]
+```
+
+Now we need to extract our coefficients (betas). To do this we need to run our linear model from last week and save the output to an object. Again, the linear model is not run inside of our function -- we are using it to set up how we extract data from a general linear model. 
+
+```{r}
+# Run the model extract the coefficients
+climate.lm = lm(vote ~perAbate + tax + factor(income_lev)+factor(age), data = Data)
+beta = climate.lm$coefficients # subset lm output to get coefficients
+beta # look at our betas
+```
+
+Save each coefficient to a different object and, look at your beta object to see which number beta goes with which factor. This part goes inside of our function:
+
+```{r, eval = FALSE}
+# Numerical factors: Assign the right coefficients given the linear model output
+  intercept = as.numeric(beta[1])
+  beta_1  = as.numeric(beta[2]) # perAbate
+  beta_2 = as.numeric(beta[3]) # Tax
+  
+# Categorical factors: The beta changes based on the factor level so we need to account for that using an else if statement
+  if(IncomeL==2){
+    beta_3 <- as.numeric(beta[4])
+    }else if(IncomeL==3){
+    beta_3 <- as.numeric(beta[5])
+    }else if(IncomeL==4){
+    beta_3<- as.numeric(beta[6])
+    }else if(IncomeL==5){
+    beta_3 <- as.numeric(beta[7])
+    } else{
+    beta_3 <- 0 # All the coefficients are with respect to the reference value
+  }
+  
+    if(Age=="fiftyplus"){
+    beta_4 <- as.numeric(beta[8])
+  }else if(Age=="fourty"){
+    beta_4 <- as.numeric(beta[9])
+  }else if(Age=="thirty"){
+    beta_4 <- as.numeric(beta[10])
+  }else if(Age=="twenty"){
+    beta_4 <- as.numeric(beta[11])
+  } else {
+    beta_4 <- 0 # All the coefficients are with respect to the reference value
+  }
+    
+```
+
+This is what our final function should look like with all of the pieces:
+```{r}
+solve.wtp = function(Data,beta,PerAbate){
+
+  IncomeL = as.factor(Data[4])
+  Age = as.factor(Data[5])
+
+  intercept = as.numeric(beta[1])
+  beta_1  = as.numeric(beta[2]) # perAbate
+  beta_2 = as.numeric(beta[3]) # Tax
+  
+  if(IncomeL==2){
+    beta_3 <- as.numeric(beta[4])
+    }else if(IncomeL==3){
+    beta_3 <- as.numeric(beta[5])
+    }else if(IncomeL==4){
+    beta_3<- as.numeric(beta[6])
+    }else if(IncomeL==5){
+    beta_3 <- as.numeric(beta[7])
+    } else{
+    beta_3 <- 0 # All the coefficients are with respect to the reference value
+  }
+  
+    if(Age=="fiftyplus"){
+    beta_4 <- as.numeric(beta[8])
+  }else if(Age=="fourty"){
+    beta_4 <- as.numeric(beta[9])
+  }else if(Age=="thirty"){
+    beta_4 <- as.numeric(beta[10])
+  }else if(Age=="twenty"){
+    beta_4 <- as.numeric(beta[11])
+  } else {
+    beta_4 <- 0 # All the coefficients are with respect to the reference value
+  }
+  
+WTP = (0.5 - (intercept + beta_1*PerAbate + beta_3 + beta_4 ))/beta_2
+WTP
+  
+} # End function
+```
+
+Let's test our function on 3 random responses. We will be using the functions `sample()` and `apply()` to help with this. Remember, you can use the help menu or a `?` before the function to determine the arguments it needs. 
+```{r}
+# Out of the 100 responses, select 3 randomly
+set.seed(0)  # for test purposes set your seed
+rand.i = sample(1:100,3) # pick 3 random numbers
+Sample = Data[rand.i,] # take a sample by extracting the random responses
+Sample # look at your sampled
+
+#Apply the solve.wtp function to your sample data set
+apply(Sample,1,solve.wtp, beta =beta, PerAbate = 70)
+
+
+```
+
+So the willingness to pay for observations 90, 27, and 37 are $349.86, $358.76, and $291.76, respectively.
+
+### Calculate the mean WTP
+
+You can experiment with this function to see what the **mean** WTP would be to support climate change legislation offering 70% abatement.
+
+The only thing that changes now is that we are applying this function to our entire data set and not just a sample.
+```{r}
+# Data is an argument in apply instead of sample
+WTP = apply(Data,1,solve.wtp, beta =beta, PerAbate = 70)
+
+AvgWTP = mean(WTP) # Take the mean of all 100 WTP calculations
+
+AvgWTP # print it out
+```
+
+According to our model, the average willingness to pay is about $302.58. Play with these last two scenarios and see how the WTP pays with percent abatement.
+
+
+**Note:** Thank goodness none of our WTP values were negative! If they were we would interpret that as a WTP of zero. If this had happened, we would simply replace all the negative values with zeros and continue on.
+
+```{r, eval = FALSE}
+New.WTP=WTP[WTP<0] = 0 # take all the negative values and make them zeros
+
+# Then take the average of the new WTP
+
+Avg.N.WTP = mean(New.WTP)
+```
+
+Easy enough ?!
+
+**What would the total benefit of this climate change legislation be for a community of 300,000 households?**
+There are a few ways to answer this question. You could estimate different demand curves and calculate the consumer surplus of the aggregated demand, but we do not have enough information for that, so we estimate the overall benefit as the average willingness to pay times the number of those impacted.
+
+```{r}
+AvgWTP*300000
+
+```
+The overall benefit is somewhere around 91 million dollars.
+
+**Think about it:** If the cost to enforce this new climate change regulation at 40 percent abatement is 20 million dollars for 300,000 residents, does it make sense to support it?
+

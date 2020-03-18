@@ -9,9 +9,28 @@ menu:
 title: R Intro
 type: docs
 weight: 1
+output:
+  blogdown::html_page:
+    toc: true
 ---
 
 
+<div id="TOC">
+<ul>
+<li><a href="#installation">Installation</a></li>
+<li><a href="#determine-set-and-create-directories">Determine, Set, and Create Directories</a></li>
+<li><a href="#install-and-load-packages">Install and Load Packages</a></li>
+<li><a href="#data-load-explore-manipulate-export-and-visualize">Data: Load, Explore, Manipulate, Export, and Visualize</a><ul>
+<li><a href="#load-data">Load Data</a></li>
+<li><a href="#explore-data">Explore Data</a></li>
+<li><a href="#manipulate-data">Manipulate Data</a></li>
+<li><a href="#export-data">Export Data</a></li>
+<li><a href="#visualize-data">Visualize Data</a></li>
+</ul></li>
+<li><a href="#final-protips">Final ProTips</a></li>
+<li><a href="#additional-resources">Additional Resources</a></li>
+</ul>
+</div>
 
 <div id="installation" class="section level1">
 <h1>Installation</h1>
@@ -60,12 +79,12 @@ install.packages(c(&quot;ggplot2&quot;,&quot;dplyr&quot;))
 install.packages(&quot;tidyverse&quot;)</code></pre>
 <p><strong>Note:</strong> Installing the package only needs to be done once.</p>
 <p>Load the package every time a new R session is started using the <code>library()</code> function.</p>
-<pre><code>## -- Attaching packages ---------------------------------------------------- tidyverse 1.3.0 --</code></pre>
+<pre><code>## -- Attaching packages ----------------------------------------------------------------------------------------------- tidyverse 1.3.0 --</code></pre>
 <pre><code>## v ggplot2 3.2.1     v purrr   0.3.3
 ## v tibble  2.1.3     v dplyr   0.8.3
 ## v tidyr   1.0.0     v stringr 1.4.0
 ## v readr   1.3.1     v forcats 0.4.0</code></pre>
-<pre><code>## -- Conflicts ------------------------------------------------------- tidyverse_conflicts() --
+<pre><code>## -- Conflicts -------------------------------------------------------------------------------------------------- tidyverse_conflicts() --
 ## x dplyr::filter() masks stats::filter()
 ## x dplyr::lag()    masks stats::lag()</code></pre>
 <p><strong>Note:</strong> If you are ever wondering how to use these packages check out the cheat sheets:</p>

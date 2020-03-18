@@ -1,0 +1,149 @@
+---
+date: ' 2020-03-18T17:01:19 '
+draft: false
+linktitle: Lab 6
+menu: 
+     MES623Econ:
+          parent: Lab Material
+          weight: 6
+title:  Conservation Strategies'
+type: docs
+weight: 6
+output:
+  blogdown::html_page:
+    toc: true
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+As a continuation of last week, we are still working with the conservation example of purchasing lots to increase the survival of two species. 
+
+Last week, we explored different variations of species' importance to conservation, where $0\leq w\leq 1$ is the weight or level of importance given to species a, and by default $1-w$ as the weight given to species b, accordingly. But what if we did not know which species was more important to the environment but we want to know what the attainable survival probabilities would be for the different values of $w$ for both species?
+
+We would need the maximum probabilty of survival for each species given the various levels of importance. From here we could creat the **efficiencey frontier** with the survival probabilites for both species. 
+
+Let's bring in some code from last week:
+```{r}
+N = 10 # Ten lots.
+
+set.seed(0) # Set seed so R remembers the random numbers that we are going to generate.
+
+hp_a = sample(0:2,N,replace=T) # Habitat potential for sp a
+hp_b = sample(0:2,N,replace=T) # Habitat potential for sp b
+
+c = sample(1:10,N,replace=T)  # The cost of each lot
+B = 12 # Budget is 12 million
+
+alpha_a = 1/(sum(hp_a))^.5 # Scaling factor for sp a
+alpha_b = 1/(sum(hp_b))^.5 # Scaling factor for sp b
+
+# function to calculate survival probabilities
+surv.prob = function(F, hp, alpha){ 
+  PS = alpha*(F%*%hp)^.5
+  as.numeric(PS)} 
+
+# function to calculte total cost
+total.cost = function(F){ 
+  TC = F%*%c # Estimate total cost
+  as.numeric(TC)}
+
+```
+
+
+Now for some new code. First, we will generate a sequence of $w$'s and estimate the optimal purchases for each of them. 
+
+```{r}
+w = seq(0,1,.05) # create a sequence from 0 to 1 with steps of .05
+```
+
+We need to loop through these $w$'s and save the results from each loop to a matrix. If you recall from last week, our estimated parameters were 10 different factions, so we need 10 rows in our matrix. Now we will have a set of fractions for each value of $w$, so we need a column for each value of $w$. The number of columns needed is determined by `length(w)`.
+
+```{r}
+K = length(w) # Number of times we need to run the loop
+
+TF = matrix(0,N,K) # Empty matrix to store the optimal values for each iteration. Each column is a diferent iteration.  
+```
+
+Here is the loop format. Next, we will work on what goes inside the loop.
+```{r,eval = FALSE}
+for(k in 1:K)
+  { # For every value of w, indexed by the letter k, do something.
+    
+  ### Write Code to do something
+  
+  TF[,k] # Save the results to each column of TF
+  
+  } # End loop
+
+```
+
+To estimate the optimal survival of each species for each of value of $w$, we have to calculate surival for both species for each value of $w$. Basically, we need to create an optimization function that updates the value of $w$ every time by indexing by k:
+
+```{r}
+library("Rsolnp") # for the optimizer
+
+for(k in 1:K){ # start loop
+  
+ opt.surv = function(ff){ # create a handle function
+    PS_A <- surv.prob(ff,hp_a,alpha_a) 
+    PS_B <- surv.prob(ff,hp_b,alpha_b) 
+    
+    # NOTE: step through each value of w using the loop and indexing
+    # Weighted sum of survival probabilities
+    PS <- w[k]*PS_A + (1-w[k])*PS_B 
+    as.numeric(-PS)
+    } # end opt.surv func
+
+  OO <- solnp(rep(.5,N), # Starting values
+      fun = opt.surv, # Function to minimize
+      ineqfun = total.cost, # parameters for the inequality constraint
+      ineqUB = B, # Upper bound of inequality
+      ineqLB = 0, # Lower bound of inequality
+      LB = rep(0,N), # Lower bound 
+      UB = rep(1,N), # Upper bound 
+      control = list(trace = 0)) # Omit reports
+  
+  TF[,k] = OO$pars # Store results
+
+  } # end loop
+
+# Did we get what we wanted?
+TF
+
+# Name the column so you know what you are looking at
+# colnames(TF) =paste("w=", seq(0,1,0.05)
+
+```
+
+Now we want to calculate the probabilities of survival using those estimated optimal fractions of land to purchase given the different levels of importance. 
+
+We use the apply function here, `apply` works with applying functions to an entire matrix. You can use `lapply` if you want to apply the function to a list or `tapply` for an array. Examine the help file for `apply` to understand the inputs.
+
+
+```{r}
+# calculate the probobility of survival for each species 
+# given the estimated fraction paramters
+PS_A = apply(TF,2,surv.prob,hp=hp_a,alpha=alpha_a)
+PS_B = apply(TF,2,surv.prob,hp=hp_b,alpha=alpha_b)
+
+# Make into a dataframe for plotting in ggplot
+Data = as.data.frame(cbind(PS_A,PS_B))
+
+
+```
+
+To plot our results, we can do the exact same process as before. The graph should look like a standard production possibilities frontier plot as showb below.
+
+```{r}
+library(ggplot2) # for plots
+library(tidyverse) # for pipping "%>%"
+
+Data %>% ggplot(aes(x=PS_B,y=PS_A)) + 
+  geom_point(size=3) + 
+  labs(x = "Probability of survival of species b",
+       y = "Probability of survival of species a") +
+  theme_classic() 
+```
+
+
+Here is your efficiency frontier representing the range of survival probabilities that maximize the total survival for the 21 different importance levels. You can't see all 21 on the graph because some overlap. Any place on the efficiency frontier represents an optimal combination of survival for each species, that maximizes the total survival given various levels of importance. Any place inside of this curve indicates that there is need for improvement in your conservation strategy and you are not maximizing the probabilty of survival for either species.

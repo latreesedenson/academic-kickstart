@@ -1,0 +1,139 @@
+---
+date: ' 2020-03-18T17:01:19 '
+draft: false
+linktitle: Lab 7
+menu: 
+     MES623Econ:
+          parent: Lab Material
+          weight: 7
+title:  Cost-Effectiveness'
+type: docs
+weight: 7
+output:
+  blogdown::html_page:
+    toc: true
+---
+
+
+
+<p>According to wikipedia, <strong>Cost-effectiveness analysis</strong> is “a form of economic analysis that compares the relative costs and outcomes of different courses of action. Cost-effectiveness analysis is distinct from cost-benefit analysis, which assigns a monetary value to the measure of effect.”</p>
+<p>In our conservation problem of protecting species A and speceies B by purchasing land, we can come up with a couple of courses of action:</p>
+<ol style="list-style-type: decimal">
+<li><p>We can purchase as much land as we need to fulfil our goal, which can be to maximize survival, as long as we stay within our budget. This is what we have been doing since lab 4.</p></li>
+<li><p>We can also fix the level of survival that we want, and purchase the cheapest amount of parcels that fulfil that goal.</p></li>
+</ol>
+<p>Today we will focus on modeling the 2nd course of action. We are asking the question-what fraction of parcels to purchase if we wanted <span class="math inline">\(P(A) \ge X\)</span>, <span class="math inline">\(P(B) \ge X\)</span>, or <span class="math inline">\(f(P(A),P(B))\ge X\)</span>, where <span class="math inline">\(X\)</span> is a predetermined value?</p>
+<p>Let’s start with one species. Say we want to purchase parcels that acheive a survival probability of 0.7 or greater for species A.</p>
+<pre class="r"><code>PS_A = 0.7</code></pre>
+<p>We need all of our species information from the previous labs. Let’s add our objects for number of parcels, habitat potential per plot, cost per plot, and the alpha scaling factor.</p>
+<pre class="r"><code>set.seed(10) # we will get different answers, with different seeds
+
+N = 10 # Ten lots
+
+# Habitat potential for sp a, if you do not set seed this will change each time
+hp_a = sample(0:2,N,replace=T) 
+c = sample(1:10,N,replace=T)  # cost of each full plot
+alpha_a = 1/(sum(hp_a))^.5 # Scaling factor for sp a</code></pre>
+<p>Let’s think about what we are optimizing in this case, and how we can translate the optimization word problem into R code.</p>
+<ol style="list-style-type: decimal">
+<li><p>We will be using the same optimization function as before, <code>solnp()</code> - think of the arguments we will need, some are optional. Checkout the help menu.</p></li>
+<li><p>If we are looking to minimize the total cost of conserving this species, what should our “<code>fun</code>” argument be? Rememeber this is the function to get the value we wish to minimize.</p></li>
+<li><p>What are some of the constraints on our optimization function?</p>
+<ol style="list-style-type: lower-alpha">
+<li>Do we have a budget constraint anymore? No, now we want to change survival but in the cheapest way possible.</li>
+<li>We have a new constraint that says our probability of survival has to be greater than or equal to 0.7.</li>
+<li>We still have constraints on our parameter estimates, the 10 fractions of parcels that we should purchase. These fractions cannot be greater than 1, or less than 0.</li>
+</ol></li>
+</ol>
+<pre class="r"><code># Function to minimize: total cost 
+total.cost = function(F){ 
+  TC = F%*%c # Estimate total cost
+  as.numeric(TC)}
+
+# Survival has to be greater than or equal to 0.7 
+# so we have/need an inequality constraint/function
+surv.prob = function(F){ 
+  PS = alpha_a*(F%*%hp_a)^.5
+  as.numeric(PS)}
+# Notice the PS is not negative, we are no longer trying to maximize survival
+
+# load the library for optimization
+library(&quot;Rsolnp&quot;) </code></pre>
+<pre><code>## Warning: package &#39;Rsolnp&#39; was built under R version 3.6.3</code></pre>
+<pre class="r"><code>Obj = solnp(rep(1e-3,N), # Starting values
+            fun = total.cost, # Function to minimize
+            ineqfun = surv.prob , # function for the inequality constraint
+            ineqLB = PS_A , # Our survival probability goal for species A
+            ineqUB = 1,
+            LB = rep(0,N), # Fraction Lower bound 
+            UB = rep(1,N), # Fraction Upper bound 
+            control = list(trace = 0)) # Omit reports
+
+FracOfParcel = Obj$pars 
+FracOfParcel</code></pre>
+<pre><code>##  [1] 1.429736e-05 4.093055e-09 4.235165e-22 1.000000e+00 7.192624e-08
+##  [6] 3.080208e-02 8.710151e-01 9.999781e-01 1.821410e-02 9.999763e-01</code></pre>
+<pre class="r"><code>TotCost = Obj$values[length(Obj$values)] # Taking the value from the last iteration
+TotCost</code></pre>
+<pre><code>## [1] 20.47089</code></pre>
+<p>The <code>$pars</code> we get from this code still represent the fraction of land we should purchase. What changes are the <code>$values</code> that we get. These now represent the minimum price we can pay to have a survival probability of 0.7 or greater for species A.</p>
+<p>Now let’s try for two species with a total probability of 0.7 or greater. We are still minimizing the total cost but now we need to set how much we want the total survival to be, given that we care equally about each species.</p>
+<p>Does this sound familiar? Look back in your labs (cough cough, Lab 6) to find a function that represents total survival, and allows you to include the level of species importance. Does the function below look familiar?</p>
+<pre class="r"><code>opt.surv = function(ff){
+  PS_A &lt;- surv.prob(ff,hp_a,alpha_a) 
+  PS_B &lt;- surv.prob(ff,hp_b,alpha_b) 
+
+  PS &lt;- w[k]*PS_A + (1-w[k])*PS_B 
+  as.numeric(-PS)
+} # end opt.surv func</code></pre>
+<p>All we need to do is update this function so it can be our inequality constraint function (<code>ineqfun</code>) in solnp().</p>
+<ol style="list-style-type: decimal">
+<li><p>We need a survival function that can take inputs from multiple species.</p></li>
+<li><p>We need to make sure we set the apprpriate <span class="math inline">\(w\)</span>. This can depend on your conservation preferences.</p></li>
+<li><p>We need to make sure we have the right sign for the return probability, since we are no longer minimizing it, it is now an equality function.</p></li>
+</ol>
+<p>Our new functions for optimization should look like the following:</p>
+<pre class="r"><code>  updated.surv.prob = function(F, hp, alpha){ 
+    PS = alpha*(F%*%hp)^.5
+    as.numeric(PS)} # end updated survival probability function 
+  
+  Total.surv = function(ff){
+    PS_A &lt;- updated.surv.prob(ff,hp_a,alpha_a) # probability of survival for species A
+    PS_B &lt;- updated.surv.prob(ff,hp_b,alpha_b) # probability of survival for species B
+    TSP &lt;- 0.5*(PS_A + PS_B) # Total survival probabilty
+    as.numeric(TSP) # Return the positive survival probability
+  } # End total survival probability function</code></pre>
+<p>Let’s give R the data for species B, and set the probability of total survival.</p>
+<pre class="r"><code>hp_b = sample(0:2,N,replace=T) # Habitat potential for species A
+
+alpha_b = 1/(sum(hp_b))^.5 # Scaling factor for species B
+
+TotSurProb = .70 # New fixed probability</code></pre>
+<p>Everything should now be placed in our solnp() function. Similar to the last example, except we have a new inequality constraint function:</p>
+<pre class="r"><code>Obj.AB = solnp(rep(1e-3,N), # Starting values
+               fun = total.cost, # Function to minimize
+               # Function for the inequality constraint for species A and Species B
+               ineqfun = Total.surv ,
+               # Our survival probability goal for species A and Species B
+               ineqLB = TotSurProb , 
+               ineqUB = 1, # Our survival probability goal for species A and Species B
+               LB = rep(0,N), # Fraction Lower bound 
+               UB = rep(1,N), # Fraction Upper bound 
+               control = list(trace = 0)) # Omit reports</code></pre>
+<p>To get a total survival probability of 0.7 or greater, we would purchase the fractions of parcels indicated by <code>Obj.AB$pars</code>. This would cost us a minimum of <code>Obj.AB$values[length(Obj.AB$values)]</code>.</p>
+<pre class="r"><code>FracToBuy = Obj.AB$pars
+FracToBuy</code></pre>
+<pre><code>##  [1] 3.178213e-06 9.510641e-10 1.412795e-12 1.000000e+00 5.460490e-09
+##  [6] 2.979024e-01 4.307419e-08 1.000000e+00 4.307662e-08 1.000000e+00</code></pre>
+<pre class="r"><code>TotalCost = Obj.AB$values[length(Obj.AB$values)]
+TotalCost</code></pre>
+<pre><code>## [1] 16.38325</code></pre>
+<p>Let’s see the survival probability of each species given the fractions of parcels we were told to purchase by the object <code>FracToBuy</code>.</p>
+<pre class="r"><code># use the survival function and our estimated fractions to calculate survival probability 
+TPS_A = updated.surv.prob(FracToBuy,hp_a,alpha_a) 
+TPS_A</code></pre>
+<pre><code>## [1] 0.6420578</code></pre>
+<pre class="r"><code>TPS_B = updated.surv.prob(FracToBuy,hp_b,alpha_b)
+TPS_B</code></pre>
+<pre><code>## [1] 0.7579422</code></pre>
+<p>You have now explored two different actions for conservation, which one would you choose and why?</p>

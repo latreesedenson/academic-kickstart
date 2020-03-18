@@ -9,6 +9,9 @@ menu:
 title: R Intro
 type: docs
 weight: 1
+output:
+  blogdown::html_page:
+    toc: true
 ---
 ```{r setup, include=FALSE}
 knitr::opts_knit$set(root.dir="C:\\Users\\lxd312\\Documents\\GitHub\\academic-template\\static\\files")

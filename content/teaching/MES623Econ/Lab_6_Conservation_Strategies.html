@@ -1,0 +1,173 @@
+---
+date: ' 2020-03-18T17:01:19 '
+draft: false
+linktitle: Lab 6
+menu: 
+     MES623Econ:
+          parent: Lab Material
+          weight: 6
+title:  Conservation Strategies'
+type: docs
+weight: 6
+output:
+  blogdown::html_page:
+    toc: true
+---
+
+
+
+<p>As a continuation of last week, we are still working with the conservation example of purchasing lots to increase the survival of two species.</p>
+<p>Last week, we explored different variations of species’ importance to conservation, where <span class="math inline">\(0\leq w\leq 1\)</span> is the weight or level of importance given to species a, and by default <span class="math inline">\(1-w\)</span> as the weight given to species b, accordingly. But what if we did not know which species was more important to the environment but we want to know what the attainable survival probabilities would be for the different values of <span class="math inline">\(w\)</span> for both species?</p>
+<p>We would need the maximum probabilty of survival for each species given the various levels of importance. From here we could creat the <strong>efficiencey frontier</strong> with the survival probabilites for both species.</p>
+<p>Let’s bring in some code from last week:</p>
+<pre class="r"><code>N = 10 # Ten lots.
+
+set.seed(0) # Set seed so R remembers the random numbers that we are going to generate.
+
+hp_a = sample(0:2,N,replace=T) # Habitat potential for sp a
+hp_b = sample(0:2,N,replace=T) # Habitat potential for sp b
+
+c = sample(1:10,N,replace=T)  # The cost of each lot
+B = 12 # Budget is 12 million
+
+alpha_a = 1/(sum(hp_a))^.5 # Scaling factor for sp a
+alpha_b = 1/(sum(hp_b))^.5 # Scaling factor for sp b
+
+# function to calculate survival probabilities
+surv.prob = function(F, hp, alpha){ 
+  PS = alpha*(F%*%hp)^.5
+  as.numeric(PS)} 
+
+# function to calculte total cost
+total.cost = function(F){ 
+  TC = F%*%c # Estimate total cost
+  as.numeric(TC)}</code></pre>
+<p>Now for some new code. First, we will generate a sequence of <span class="math inline">\(w\)</span>’s and estimate the optimal purchases for each of them.</p>
+<pre class="r"><code>w = seq(0,1,.05) # create a sequence from 0 to 1 with steps of .05</code></pre>
+<p>We need to loop through these <span class="math inline">\(w\)</span>’s and save the results from each loop to a matrix. If you recall from last week, our estimated parameters were 10 different factions, so we need 10 rows in our matrix. Now we will have a set of fractions for each value of <span class="math inline">\(w\)</span>, so we need a column for each value of <span class="math inline">\(w\)</span>. The number of columns needed is determined by <code>length(w)</code>.</p>
+<pre class="r"><code>K = length(w) # Number of times we need to run the loop
+
+TF = matrix(0,N,K) # Empty matrix to store the optimal values for each iteration. Each column is a diferent iteration.  </code></pre>
+<p>Here is the loop format. Next, we will work on what goes inside the loop.</p>
+<pre class="r"><code>for(k in 1:K)
+  { # For every value of w, indexed by the letter k, do something.
+    
+  ### Write Code to do something
+  
+  TF[,k] # Save the results to each column of TF
+  
+  } # End loop</code></pre>
+<p>To estimate the optimal survival of each species for each of value of <span class="math inline">\(w\)</span>, we have to calculate surival for both species for each value of <span class="math inline">\(w\)</span>. Basically, we need to create an optimization function that updates the value of <span class="math inline">\(w\)</span> every time by indexing by k:</p>
+<pre class="r"><code>library(&quot;Rsolnp&quot;) # for the optimizer</code></pre>
+<pre><code>## Warning: package &#39;Rsolnp&#39; was built under R version 3.6.3</code></pre>
+<pre class="r"><code>for(k in 1:K){ # start loop
+  
+ opt.surv = function(ff){ # create a handle function
+    PS_A &lt;- surv.prob(ff,hp_a,alpha_a) 
+    PS_B &lt;- surv.prob(ff,hp_b,alpha_b) 
+    
+    # NOTE: step through each value of w using the loop and indexing
+    # Weighted sum of survival probabilities
+    PS &lt;- w[k]*PS_A + (1-w[k])*PS_B 
+    as.numeric(-PS)
+    } # end opt.surv func
+
+  OO &lt;- solnp(rep(.5,N), # Starting values
+      fun = opt.surv, # Function to minimize
+      ineqfun = total.cost, # parameters for the inequality constraint
+      ineqUB = B, # Upper bound of inequality
+      ineqLB = 0, # Lower bound of inequality
+      LB = rep(0,N), # Lower bound 
+      UB = rep(1,N), # Upper bound 
+      control = list(trace = 0)) # Omit reports
+  
+  TF[,k] = OO$pars # Store results
+
+  } # end loop
+
+# Did we get what we wanted?
+TF</code></pre>
+<pre><code>##               [,1]         [,2]         [,3]         [,4]         [,5]
+##  [1,] 2.777776e-01 2.777769e-01 5.954320e-07 1.856209e-07 1.322669e-07
+##  [2,] 1.000000e+00 1.000000e+00 1.000000e+00 9.999999e-01 9.999999e-01
+##  [3,] 2.898486e-08 2.765584e-08 2.863235e-08 3.954573e-08 3.554405e-08
+##  [4,] 9.477122e-09 5.994321e-09 2.302182e-09 7.179070e-09 3.178182e-09
+##  [5,] 9.477122e-09 6.692328e-09 3.335609e-09 8.969904e-09 5.135982e-09
+##  [6,] 2.942202e-07 2.760998e-07 2.442683e-07 1.541478e-07 9.462730e-08
+##  [7,] 2.942202e-07 2.658580e-06 9.999975e-01 9.999991e-01 9.999994e-01
+##  [8,] 9.999999e-01 1.000000e+00 1.000000e+00 1.000000e+00 1.000000e+00
+##  [9,] 2.504318e-08 2.021599e-08 1.488172e-08 2.122550e-08 1.401111e-08
+## [10,] 2.777776e-01 2.777769e-01 5.954296e-07 1.856209e-07 1.322668e-07
+##               [,6]         [,7]         [,8]         [,9]        [,10]
+##  [1,] 8.427607e-08 9.921985e-08 8.920633e-08 7.032201e-08 7.124203e-08
+##  [2,] 9.999999e-01 9.999998e-01 9.999997e-01 9.999996e-01 9.999995e-01
+##  [3,] 3.622465e-08 4.505654e-08 8.529524e-08 1.400628e-07 1.721554e-07
+##  [4,] 1.293129e-09 1.301631e-09 7.341021e-09 9.172902e-09 6.479922e-11
+##  [5,] 3.492291e-09 4.004353e-09 1.164727e-08 1.519903e-08 4.790093e-09
+##  [6,] 6.639389e-08 5.800888e-08 7.559466e-08 7.936562e-08 4.214962e-08
+##  [7,] 9.999996e-01 9.999996e-01 9.999998e-01 9.999998e-01 1.000000e+00
+##  [8,] 1.000000e+00 1.000000e+00 1.000000e+00 1.000000e+00 1.000000e+00
+##  [9,] 1.064833e-08 1.062624e-08 1.258499e-08 2.451534e-08 8.285387e-09
+## [10,] 8.427605e-08 9.921985e-08 8.920634e-08 7.032201e-08 7.124203e-08
+##              [,11]        [,12]        [,13]        [,14]        [,15]
+##  [1,] 6.503136e-08 6.684285e-08 7.800388e-08 6.734972e-08 5.332915e-08
+##  [2,] 9.997047e-01 6.039602e-01 2.307690e-01 6.307720e-07 2.096375e-07
+##  [3,] 2.949861e-04 3.960395e-01 7.692307e-01 9.999991e-01 9.999996e-01
+##  [4,] 5.325699e-12 3.906763e-10 2.943638e-11 2.976467e-11 2.809426e-09
+##  [5,] 5.719786e-09 4.162027e-09 4.211957e-09 5.997058e-09 1.031021e-08
+##  [6,] 3.336266e-08 3.448807e-08 3.486471e-08 3.672754e-08 3.798547e-08
+##  [7,] 1.000000e+00 1.000000e+00 1.000000e+00 1.000000e+00 9.999999e-01
+##  [8,] 1.000000e+00 1.000000e+00 1.000000e+00 1.000000e+00 1.000000e+00
+##  [9,] 9.071614e-09 9.748826e-09 9.962762e-09 1.180312e-08 1.499795e-08
+## [10,] 6.503137e-08 6.684284e-08 7.800388e-08 6.734972e-08 5.332915e-08
+##              [,16]        [,17]        [,18]        [,19]        [,20]
+##  [1,] 3.696394e-08 2.635220e-08 2.802124e-08 2.249253e-08 1.369711e-08
+##  [2,] 7.224287e-08 4.483645e-08 4.207169e-08 3.168946e-08 1.849335e-08
+##  [3,] 9.999998e-01 9.999998e-01 9.999998e-01 9.999999e-01 9.999999e-01
+##  [4,] 2.302908e-09 1.743372e-09 5.314224e-09 4.882402e-09 1.443804e-09
+##  [5,] 1.003178e-08 9.562923e-09 1.519872e-08 1.508016e-08 1.073540e-08
+##  [6,] 3.078871e-08 2.500586e-08 2.951193e-08 2.546644e-08 1.638054e-08
+##  [7,] 9.999999e-01 9.999999e-01 9.999999e-01 9.999999e-01 9.999999e-01
+##  [8,] 1.000000e+00 1.000000e+00 1.000000e+00 1.000000e+00 1.000000e+00
+##  [9,] 1.276140e-08 1.059092e-08 1.472380e-08 1.313982e-08 7.938565e-09
+## [10,] 3.696394e-08 2.635220e-08 2.802124e-08 2.249253e-08 1.369711e-08
+##              [,21]
+##  [1,] 1.136628e-08
+##  [2,] 1.441794e-08
+##  [3,] 9.999999e-01
+##  [4,] 1.386734e-09
+##  [5,] 1.136628e-08
+##  [6,] 1.441794e-08
+##  [7,] 9.999999e-01
+##  [8,] 1.000000e+00
+##  [9,] 7.376989e-09
+## [10,] 1.136628e-08</code></pre>
+<pre class="r"><code># Name the column so you know what you are looking at
+# colnames(TF) =paste(&quot;w=&quot;, seq(0,1,0.05)</code></pre>
+<p>Now we want to calculate the probabilities of survival using those estimated optimal fractions of land to purchase given the different levels of importance.</p>
+<p>We use the apply function here, <code>apply</code> works with applying functions to an entire matrix. You can use <code>lapply</code> if you want to apply the function to a list or <code>tapply</code> for an array. Examine the help file for <code>apply</code> to understand the inputs.</p>
+<pre class="r"><code># calculate the probobility of survival for each species 
+# given the estimated fraction paramters
+PS_A = apply(TF,2,surv.prob,hp=hp_a,alpha=alpha_a)
+PS_B = apply(TF,2,surv.prob,hp=hp_b,alpha=alpha_b)
+
+# Make into a dataframe for plotting in ggplot
+Data = as.data.frame(cbind(PS_A,PS_B))</code></pre>
+<p>To plot our results, we can do the exact same process as before. The graph should look like a standard production possibilities frontier plot as showb below.</p>
+<pre class="r"><code>library(ggplot2) # for plots
+library(tidyverse) # for pipping &quot;%&gt;%&quot;</code></pre>
+<pre><code>## -- Attaching packages ------------------------------------------------------------------ tidyverse 1.3.0 --</code></pre>
+<pre><code>## v tibble  2.1.3     v dplyr   0.8.3
+## v tidyr   1.0.0     v stringr 1.4.0
+## v readr   1.3.1     v forcats 0.4.0
+## v purrr   0.3.3</code></pre>
+<pre><code>## -- Conflicts --------------------------------------------------------------------- tidyverse_conflicts() --
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()</code></pre>
+<pre class="r"><code>Data %&gt;% ggplot(aes(x=PS_B,y=PS_A)) + 
+  geom_point(size=3) + 
+  labs(x = &quot;Probability of survival of species b&quot;,
+       y = &quot;Probability of survival of species a&quot;) +
+  theme_classic() </code></pre>
+<p><img src="/teaching/MES623Econ/Lab_6_Conservation_Strategies_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p>Here is your efficiency frontier representing the range of survival probabilities that maximize the total survival for the 21 different importance levels. You can’t see all 21 on the graph because some overlap. Any place on the efficiency frontier represents an optimal combination of survival for each species, that maximizes the total survival given various levels of importance. Any place inside of this curve indicates that there is need for improvement in your conservation strategy and you are not maximizing the probabilty of survival for either species.</p>

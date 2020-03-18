@@ -1,0 +1,253 @@
+---
+date: ' 2020-03-18T17:01:19 '
+draft: false
+linktitle: Lab 4
+menu: 
+     MES623Econ:
+          parent: Lab Material
+          weight: 4
+title:  Optimization'
+type: docs
+weight: 4
+output:
+  blogdown::html_page:
+    toc: true
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Optimization Introduction
+
+According to Wikipedia, optimization can be defined as: **"the selection of _a best element_ (with regard to some criterion) from some set of available alternatives."** 
+
+Within the field of conservation we can think of optimization in terms of site selections.  The best element in site collection can be interpreted as the "best" amount of land set aside as a reserve. The "best" element does not have to be singular, so let's refine the concept to: **the selection of the best set of elements (with regard to some criterion) from a set of alternatives.** To find that set, we need some sort of scoring mechanism that allows us to determine if we are actually choosing the best elements, when compared to the alternatives. That scoring mechanism is what we call the **objective function**.
+
+
+The **objective function** is the mechanism that allows us to evaluate different elements with the same criteria. Depending on the nature of the problem, we can maximize or minimize the criteria for those elements. Typically, the set of elements we can choose from are constrained. The nature of these constraints depends on each specific problem (ex: budget caps). 
+
+
+**Summary:** the goal of optimization is to find the set of elements that maximizes or minimizes our objective function. 
+
+
+## Optimization with R: Constrained and Unconstrained
+
+### Unconstrained Optimization
+Let's work on an example where we first consider a function that evaluates the equation $$z=100*(y-x^2)^2+(1-x)^2$$ and takes the vector, $var.vec=\{x, y\}$ as inputs. See the code below:
+
+
+```{r}
+
+simple.function <- function(var.vec) { 
+    x <- var.vec[1] # Tells R that x_1 is the first element of var.vec
+    y <- var.vec[2] # Tells R that x_2 is the second element of var.vec
+    100 * (y - x^2)^2 + (1 - x)^2
+} # end function 
+
+```
+
+Now we can evaluate the function for any combination of values. Let's try $x=.5$ and $y=.5$. 
+
+```{r}
+
+var.vec <- c(.5,.5) # var.vec contains both values of x
+
+z <- simple.function(var.vec) # Evaluate the function at var.vec
+
+z # Report results
+```
+
+
+
+Looking at the graph of our function evaluated between 0 to 1 for both x and y we can see that this function has a global minimum of zero at $x_1=x_2=1$. 
+
+```{r, echo=FALSE}
+x <- seq(0,2, .2)
+  y <- x
+  f <- function(x_1 = x ,x_2 = x) {100 * (x_2 - x_1^2)^2 + (1 - x_1)^2 }
+  z <- outer(x, y, f)
+  z[is.na(z)] <- 1
+  op <- par(bg = "white")
+  persp(x, y, z, theta = 30, phi = 30, expand = 0.5, col = "lightblue", ticktype = "detailed")
+  
+  
+```
+If we wanted to find that minimum with R, we need a couple things:
+
+
+i)	an objective function (simple.function in this case), 
+
+
+ii)	starting values (a vector $(0,0)$), 
+
+
+iii)	boundaries for our decision variables $(-\infty,\infty)$, and 
+
+
+iv)	the method of optimization 
+
+This is an **unconstrained optimization**, the only restrictions are the upper and lower bounds of the elements that go into the objective function.
+
+```{r}
+OO <- optim( # Store optimization output in a list called OO
+      c(0,0), # Guess starting values 
+      simple.function, # Objective function
+      upper = Inf, # Upper boundary for the decision variables
+      lower = -Inf, # Lower boundary for the decision variables
+      method = "L-BFGS-B") # Optimization algorithm that allows for interval specification
+
+OO # Report output of optimization
+```
+**Note:** See additional resources for explaination on differnt optimization methods. Click [here.](https://www.ibm.com/developerworks/library/ba-optimR-john-nash/index.html)
+
+The values reported above indicate the optimal combination of $x_1$ and $x_2$ (\$par) that minimize our objective function. The minimum value it achieves using those values is $3.97\times 10^{-8}$ (\$value). To explore further, impose additional constraints on the values that minimize the objective function. We can extract the values of our optimal choice of variables by indexing the output element we created above:
+
+```{r}
+var.vec <- OO$par # Extract optimal variable values 
+
+y <- simple.function(var.vec) # Evaluate the function at var.vec
+
+y # Report results
+
+```
+
+### Constrained Optimization
+
+Suppose that there are 10 lots available for purchase. We will index those lots with the letter $i$ which is a vector from 1 to 10 , $i=\{1,2,..,10\}$. Each lot has some habitat potential for an endangered species, let's call it $hp_i=\{0,1,2\}$, meaning that lot $i$ has habitat potential $hp_i$, and it could be zero, one, or two, with the latter being the highest potential. If we allow for the possibility of purchasing fractions of a lot, we can define $0\leq F_i\leq1$ as the fraction we purchase from lot $i$. It follows that $F_i=0$ means we purchase nothing of that lot, while $F_i=1$ means we purchase all of it.  There is also a cost of purchasing each lot, which is given by $c_i$. 
+
+
+As a guideline, we know that the probability of survival of the species is equal to:$$PS=\alpha\sqrt{\sum_{i=1}^{10}hp_i\times F_i}$$
+
+
+**If we want to maximize the probability of survival of the species, but we are constrained by a budget which is 25% of the total cost of the entire set of lots. How much of each lot should we purchase?** 
+
+
+To answer this question we need to set up the problem first. Let's create these lots, their habitat potential, and their cost.
+
+```{r pars}
+
+N <- 10 # Ten lots.
+
+set.seed(0) # Set seed so R remembers the random numbers that we are going to generate.
+
+hp <- sample(0:2,N,replace=T) # Habitat potential and stuff.
+
+c <- sample(1:10,N,replace=T)  # The cost of each lot.
+
+TC <- sum(c) # Total cost of purchasing all lots.
+
+B <- TC*0.25 # Budget is enough to purchase 25% of the entire set of lots
+
+```
+
+Under the assumption that purchasing all land gives probability of survival ($PS$) equal to one, $\alpha$ is a scaling factor that makes $PS=1$ when we buy all lots in their entirety. If you purchase all lots the habitat potential of your purchase is the sum of the habitat potential of all the plots. This is then scaled so that the probability of survival adds to one.
+
+```{r add vars}
+THP <- sum(hp) # Total habitat potential when all lots are purchased.
+
+alpha <- 1/(THP)^.5 # Scaling factor so the probability adds to one.
+
+```
+
+Finally, the most important thing here is our policy/objective function. As with any function, the idea is to give it some arguments and output the probability of survival. Recall that up to this point, we have two vectors or parameters, $\pmb{hp}$ and $\pmb{c}$ (Bold letters represent vectors), respectively; as well as our total budget, $B$, and the parameter $\alpha$. Given any combination of purchases $\pmb{F}$, our probability of survival is then given by $PS=f(\pmb{F},\pmb{hp},\pmb{c},B,\alpha)$. In R, we will now create a function that given all the information in the model, estimates the probability of survival of the species for any vector $\pmb{F}$. Note that because R always minimizes, whenever we are trying to maximize something, we have to multiply the objective function by minus one.    
+
+```{r}
+surv.prob <- function(F,hp,alpha){
+  PB <- -alpha*(F%*%hp)^.5 # Probability of survival multiplied by minus one
+} 
+```
+
+Let's add the budget constraint. Formally this can be written as $F_1\times c_1 +...+F_{10}\times c_{10}\leq B$. This is known as a linear constraint, and R has a special algorithm to deal with them. Generally speaking, a problem of $m$ variables with $n$ number of constraints can be formally defined as:$$\begin{array}{ll} a_{11}X_1+...+a_{1m}X_m&\geq b_1\\\;\;\;\vdots\;\;\;\;\;\;\;\;\ddots\;\;\;\;\;\vdots&\;\;\;\;\vdots\\a_{n1}X_1+...+a_{nm}X_m&\geq b_n\end{array}$$     
+Notice that each $a_{ij}$ ($i=\{1,..,n\}$ and $j=\{1,..,m\}$) tells us how each variable enters each of the constraints. In our case, each of the coefficients is the cost associated with each parcel. Thus, once we multiply them by how much we purchase from each parcel, we get the total expenditure, which has to be less than our total budget. We also imposed a limit on the values $\pmb{F}$ can take, so now we have everything to formalize our problem mathematically: $$\max_{\pmb{F}}\left\{PS=\alpha\sqrt{\sum_{i=1}^{10}hp_i\times F_i}\;\right\}$$ $$\begin{array}{ll} S.T.\\ F_1\times c_1 +...+ F_{10}\times c_{10}&\leq B\\ F_1,...,F_m&\leq 1 \\ F_1,...,F_m&\geq 0\end{array}$$
+
+
+R requires the constraints to be all $\geq$ rather than $\leq$. If we look carefully at this problem, notice that not all the inequality signs go in the right direction. We just multiply both sides by minus one, thus the sign is reversed; for instance: $-F_1\times c_1 -...-F_{10}\times c_{10}\geq -B$. The same process is analogous for $F_1\leq 1$. 
+
+
+The first step to get this running is to tell R what the constraints are. We give the software a matrix filled with the $a_{ij}$ coefficients on the left hand side; one for each constraint $i$ and variable $j$. If we have $n$ constraints and $m$ variables, the matrix will be of size $n\times m$. For this step, keep in mind that $0\leq F_i\leq 1$ means two constraints for each decision variable, $F_i$, and they have to be listed explicitly:
+
+
+```{r}
+# First, we have the coefficients for the cost of each lot, since total cost has to be less than budget, multiply by minus one
+
+-c
+
+# Second, all decision variables have to be less than one, so multiply them by minus one
+
+-diag(N)
+
+# Third, all decision variables have to be greater than zero 
+
+diag(N)
+
+# Now, let's stack them all into one matrix
+
+cons.M <- rbind(-c,-diag(N),diag(N))
+
+cons.M
+
+```
+
+With the constraint matrix in place, we have covered the left hand side of the formal constraint notation in our problem. The right side on the other hand, will be a vector of size $(n,1)$ with each of the constraining values associated with each restriction:
+
+```{r}
+# First, the budget, but rememeber that we have to multiply by minus one
+
+-B
+
+# Second, each decision variable has to be less or equal than one, also multiplied by minus one
+
+rep(-1,N)
+
+# Third, non negative constraints
+
+rep(0,N)
+
+# Stack them all into one vector
+
+cons.V <- c(-B, rep(-1,N), rep(0,N))
+
+cons.V
+
+```
+
+Now we have both a matrix and a vector that tell R the conditions under which we are trying to solve our problem.
+
+
+All that is left for us is to solve this problem. To do so, we will use the constrained optimization function in R, `constrOptim()`. The general formulation is as follows:
+
+```{r}
+
+F <- rep(1e-3,N) # Create a set of starting values and make them slightly greater than zero.
+
+
+OO <- constrOptim( # Function for constrained optimization
+            F, # Starting values  
+            surv.prob, # Function to minimize
+            hp=hp, alpha=alpha, # Values of the parameters that go into the objective function 
+            ui = cons.M, # Constraint matrix
+            ci=cons.V, # Constraint vector
+            mu = 1e-2, # Tolerance parameter, increases the accuracy of the calculations
+            method = "Nelder-Mead", # Optimization algorithm
+            outer.iterations = 1e9, # Parameter for convergence criteria 
+            outer.eps = 1e-09) # Parameter for convergence criteria  
+
+OO
+
+```
+
+The interpretation of the output is the same as in the unconstrained case. \$par indicates the optimal value for each decision variable (x and y), and \$value indicates the value obtained with those parameters. To finalize, let's make sure the computer actually did what we asked.
+
+```{r}
+# Retrieve optimal conservation strategy 
+F_star <- OO$par
+
+# Estimate total cost
+
+TC_star <- F_star%*%c
+
+TC_star
+
+```
+
+So, we can see that we are right on point in terms of cost. The conservation performance (77%) is actually quite good given that the budget is a bare 25% of the total cost of the lots. Obviously, some of the prescriptions are pretty small, but that's where your expertise comes into play when analyzing what the computer tells you. Broadly speaking, all optimization algorithms work in a similar way as to what I have shown to you here. 

@@ -1,0 +1,116 @@
+---
+date: ' 2020-03-18T16:37:44 '
+draft: false
+linktitle: Lab 3
+menu: 
+     MES623Econ:
+          parent: Lab Material
+          weight: 3
+title:  Simulation'
+type: docs
+weight: 3
+output:
+  blogdown::html_page:
+    toc: true
+---
+
+
+<div id="TOC">
+<ul>
+<li><a href="#sampling-from-a-distribution">Sampling From a Distribution</a></li>
+</ul>
+</div>
+
+<p>Say you want to simulate a process such as average rainfall in a year. Chances are the will be some really dry days of the year, and some really wet days of the year. Processes can follow many different distributions. With R you can generate data which represent those different processes. This is called generating or simulating random variables.</p>
+<p>#Simulating Random Variables</p>
+<p>The distribution that explains most natural processes is the <strong>Normal Distribution</strong>. In this distribution, extreme events are unlikely. The distribution can be used to describe processes like the height of people in a population. Use <code>rnorm(n,mean,sd)</code>to generate the random variables.</p>
+<p><img src="/teaching/MES623Econ/Lab_3_Simulation_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
+<p>The <strong>Uniform Distribution</strong> is a continuous distribution that gives every value from a minimum to a maximuman an equal chance of occuring. Think of rolling a fair die with 6 sides. The function is <code>runif(x,min,max)</code>.
+<img src="/teaching/MES623Econ/Lab_3_Simulation_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<p>The <strong>Poisson Distribution</strong> is a discrete distribution that describes the number of times an event occurs in a given interval, such as the number of telephone calls per minute (non-negative integers). The function to generate these types of values is <code>rpois(x,lambda)</code>. Lambda is the mean occurence per interval.
+<img src="/teaching/MES623Econ/Lab_3_Simulation_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<p><strong>Exercise 1:</strong> Generate data for the following scenarios and graph the distributions. For part a increase the <code>n</code> argument to 1e5, then take the average (<code>mean()</code>) and standard deviation (<code>sd()</code>) of that sample. Notice anything?</p>
+<p><strong>A.</strong> The distribution of rainfall over 365 days if the average amount of rainfall is 10 inches and the standard deviation is 2.5.</p>
+<p><strong>B.</strong> The distribution of 100 people spinning a spinner with 8 equally sized sections.</p>
+<pre class="r"><code># Use this code to graph your distribution
+library(ggplot2) # load the ggplot library
+
+dist.data =distribution() # 1. generate the distribution and save it as an object
+
+ggplot() + aes(dist.data) + # 2. Graph the distribution you just created
+
+# 3. Experiment with how things look
+geom_histogram(binwidth = 1, colour=&quot;black&quot;, fill=&quot;white&quot;) </code></pre>
+<p><strong>Note:</strong> There are many other distributions in R this is just giving you a taste of what is out there. In the future, you can use Google to find the function name of the distribution that matches the error structure of your data the best. Prefixes are applied to the distribution functions for different utilities:</p>
+<ul>
+<li><p><code>d</code> for “density” evaluates the probability density function (Ex: <code>dnorm</code>)</p></li>
+<li><p><code>r</code> for “random” draws random variables from the distribution (Ex: <code>rnorm</code>)</p></li>
+<li><p><code>p</code> for “probability” evaluates the cumulative distribution function, cdf (Ex: <code>pnorm</code>)</p></li>
+<li><p><code>q</code> for “quantile” evaluates the inverse cdf (Ex:<code>qnorm</code>)</p></li>
+</ul>
+<div id="sampling-from-a-distribution" class="section level1">
+<h1>Sampling From a Distribution</h1>
+<p>You generated data for a process now let’s take some of those values. We do this by using the function <code>sample()</code>. Out of those 365 days of rainfall, let’s take a 5-day sample. Do this multiple times. Notice anything?</p>
+<pre class="r"><code>rain = rnorm(365,10,2.5)
+rain.samp = sample(rain,replace = TRUE, size = 5)
+sd(rain.samp)</code></pre>
+<p><strong>ProTip:</strong> You can also use the sample function to grab random numbers from a sequence of numbers.</p>
+<p>If we wanted to replicate this same draw of random numbers we need to set the random number generation seed. This can be any positive integer.</p>
+<p><strong>Exercise 2:</strong> Run <code>set.seed(23)</code>, generate the random variables (rvs) again, and then generate the rvs one more time under a different object name. Compare the objects. Are they the same?</p>
+<p>#<strong>All together</strong>
+<strong>Exercise 3:</strong></p>
+<p><strong>A.</strong> Using the R features we have learned about over the past 2 weeks, simulate a demand curve with random normal error around the price and the final quantity. Graph the resulting demand curve using the following demand curve equation and label the grpah (“demand” &amp; axes):
+<span class="math display">\[Q=-.4P+50\]</span>
+<strong>B.</strong> Randomly sample 4 prices from the generated curve, determine the quantity demanded for each price, and label the points on individual graphs. (Hint: Functions and/or loops can help reduce the amount of code you write)</p>
+<pre class="r"><code># A ---------------------------------------
+library(ggplot2)
+set.seed(45) # set the seed so our numbers are able to be replicated
+
+prices = seq(1,100,by= 5) # generate a vector of prices
+p_n = length(prices) # save the length as an object to be used later
+r.prices =  rnorm(p_n,prices,5) # generate random error around the prices 
+
+# Create a function to calculate quantity on the demand curve 
+# ... only useful if you are changing the slopw and intercept 
+# constantly which you might do in workouts
+
+eval = function(slope = -.4,intercept=50,p =10) 
+  {
+  q = (slope*p+intercept)
+  return(q)
+  } # end eval function
+
+# Use the eval function to calculate quantities and add random error
+r.quant = rnorm(p_n,eval(p = r.prices),1) 
+
+# Create a dataframe to use in ggplot
+r.dem = as.data.frame(cbind(r.prices,r.quant))
+
+# Plot the demand curve 
+Plot.OG = ggplot(r.dem, aes(x = r.quant, y = r.prices)) +  # input the data and identify x and y
+  geom_point()+ # Make it a scatterplot graph to see variabilty from random error
+  stat_smooth(method = &#39;lm&#39;) + # put a line through the points
+  annotate(&quot;text&quot;, x = 12, y = 80, vjust = -1, label = &quot;Demand&quot;) # label the graph using x and y as placements
+Plot.OG</code></pre>
+<p><img src="/teaching/MES623Econ/Lab_3_Simulation_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<pre class="r"><code># B -----------------------------------------------------------
+
+n.samples = sample(r.prices,4) # take 4 samples from the random prices
+
+# Create a function to determine the quantity demanded for each price, 
+# and label the points on individual graphs
+graph.samp.fun = function(price = 10) 
+  {
+  Plot.OG + # the original demand curve
+    geom_linerange(aes(x = eval(p = price), y= NULL, ymin=0, ymax=price),linetype=&quot;dashed&quot;)+ # add a vertical line from zero to the quantity
+    geom_segment(aes(x=0,xend= eval(p =price),y=price,yend=price),linetype=&quot;dashed&quot; )+ # add a horizontal line from zero to the price
+     annotate(geom=&quot;text&quot;, x=eval(p=price)-10, y=price+5, label=paste(&quot;P= $&quot;,signif(price,3),&quot;, Q = &quot;, signif(eval(p =price),3)),size = 4 , color=&quot;black&quot;) + # label the point on the graph, use paste to make a nice label
+  xlab(&quot;Quantity&quot;) + # add an accurate x label
+  ylab(&quot;Price (Million $)&quot;) # add an accurate y label
+}
+
+graph.samp.fun() # test the function</code></pre>
+<p><img src="/teaching/MES623Econ/Lab_3_Simulation_files/figure-html/unnamed-chunk-6-2.png" width="672" /></p>
+<pre class="r"><code>graph.samp.fun(price = n.samples[2]) # Use the function to graph each of the 4 sampled prices  </code></pre>
+<p><img src="/teaching/MES623Econ/Lab_3_Simulation_files/figure-html/unnamed-chunk-6-3.png" width="672" /></p>
+</div>

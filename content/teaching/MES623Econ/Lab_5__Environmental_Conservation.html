@@ -1,0 +1,259 @@
+---
+date: ' 2020-03-18T17:01:19 '
+draft: false
+linktitle: Lab 5
+menu: 
+     MES623Econ:
+          parent: Lab Material
+          weight: 5
+title:  Environmental Conservation'
+type: docs
+weight: 5
+output:
+  blogdown::html_page:
+    toc: true
+---
+
+
+<div id="TOC">
+<ul>
+<li><a href="#constrained-optimization-recap">Constrained Optimization Recap</a></li>
+<li><a href="#more-optimization-with-constraints">More Optimization With Constraints</a></li>
+<li><a href="#further-analysis">Further Analysis</a></li>
+</ul>
+</div>
+
+<div id="constrained-optimization-recap" class="section level2">
+<h2>Constrained Optimization Recap</h2>
+<p>Last week, we learned that real world conservation problems can be solved with the help of computers and optimization. Optimization allowed us to find the set of elements that minimized our objective function.</p>
+<p>Last week, we wanted to determine what fraction of 10 different lots we could purchase to increase the survival of a species. We simulated costs and habitat survival potentials for each lot. We also had a budget of 12 million.</p>
+<pre class="r"><code>N = 10 # Ten lots.
+
+set.seed(0) # Set seed so R remembers the random numbers that we are going to generate.
+
+hp = sample(0:2,N,replace=T) # Habitat potential
+
+c = sample(1:10,N,replace=T)  # The cost of each lot
+
+B = 12 # Budget is 12 million
+
+THP = sum(hp) # Total habitat potential when all lots are purchased.
+
+alpha = 1/(THP)^.5 # Scaling factor so the probability adds to one.</code></pre>
+<p>Since our total cost changes as a function of the fraction of land that was purchased, we changed this into a function. We also create our objective function, the goal of which is to maximize the probability of survival of a species (i.e., minimize the negative probability).</p>
+<pre class="r"><code># Function that calculates the total cost, it ONLY takes F as a parameter
+total.cost = function(F){ 
+  TC &lt;- F%*%c # Estimate total cost
+  as.numeric(TC)}
+
+surv.prob = function(F){
+  PB = -alpha*(F%*%hp)^.5 # Probability of survival multiplied by minus one
+  as.numeric(PB) # as.numeric() gets rid of those previous warnings when optimizing
+} </code></pre>
+<p>We then used the package <code>Rsolnp</code> to determine what fraction of each lot should be purchased so that we stay within our budget and acheive our goal.</p>
+<pre class="r"><code># Load the package
+library(&quot;Rsolnp&quot;)</code></pre>
+<pre><code>## Warning: package &#39;Rsolnp&#39; was built under R version 3.6.3</code></pre>
+<pre class="r"><code># Create a set of starting values and make them slightly greater than zero.
+F = rep(1e-3,N) 
+
+# Run the optimization function
+OO = solnp(F, # Starting values
+      fun = surv.prob, # Function to minimize
+      ineqfun = total.cost, # Parameters for the inequality constraint
+      ineqUB = B, # Upper bound of inequality
+      ineqLB = 0, # Lower bound of inequality
+      LB = rep(0,N), # Lower bound for decision variables, must be a vector 
+      UB = rep(1,N)) # Upper bound for decision variables, must be a vector as well</code></pre>
+<pre><code>## 
+## Iter: 1 fn: -0.6437   Pars:  0.999999827914 0.000000120160 0.999999944090 0.000000006695 0.000000006075 0.000000003078 0.000000015921 0.571428571717 0.000000007691 0.000000046708
+## Iter: 2 fn: -0.6437   Pars:  0.999999842284 0.000000105165 0.999999952334 0.000000004778 0.000000003724 0.000000001484 0.000000013578 0.571428579086 0.000000005383 0.000000042027
+## solnp--&gt; Completed in 2 iterations</code></pre>
+<pre class="r"><code># Print the results
+ OO</code></pre>
+<pre><code>## $pars
+##  [1] 9.999998e-01 1.051649e-07 1.000000e+00 4.777784e-09 3.724303e-09
+##  [6] 1.483607e-09 1.357782e-08 5.714286e-01 5.383018e-09 4.202738e-08
+## 
+## $convergence
+## [1] 0
+## 
+## $values
+## [1] -0.03162278 -0.64365029 -0.64365029
+## 
+## $lagrange
+##             [,1]
+## [1,] -0.02219484
+## 
+## $hessian
+##                [,1]         [,2]         [,3]         [,4]        [,5]
+##  [1,]  0.0028511695 -0.006469109 -0.003984286 -0.009490138  0.00034874
+##  [2,] -0.0064691091  0.057843240  0.071018519  0.120835537  0.02307740
+##  [3,] -0.0039842864  0.071018519  0.183705038  0.182389888 -0.07176514
+##  [4,] -0.0094901379  0.120835537  0.182389888  0.293574354  0.05046641
+##  [5,]  0.0003487400  0.023077396 -0.071765139  0.050466413  0.90331643
+##  [6,] -0.0157133076  0.114728091  0.097019583  0.247227291  0.08994880
+##  [7,]  0.0003960461  0.014350692 -0.059877599  0.034015020 -0.07116263
+##  [8,] -0.0218341726  0.157298827  0.181696793  0.322485417  0.06170340
+##  [9,] -0.0150720485  0.129874240  0.160552246  0.271371020  0.04928496
+## [10,] -0.0163777029  0.125804863  0.132857061  0.268606033  0.11044483
+## [11,] -0.0151171868  0.119226805  0.169353355  0.236085822 -0.08715448
+##              [,6]          [,7]        [,8]        [,9]       [,10]       [,11]
+##  [1,] -0.01571331  0.0003960461 -0.02183417 -0.01507205 -0.01637770 -0.01511719
+##  [2,]  0.11472809  0.0143506916  0.15729883  0.12987424  0.12580486  0.11922680
+##  [3,]  0.09701958 -0.0598775988  0.18169679  0.16055225  0.13285706  0.16935336
+##  [4,]  0.24722729  0.0340150199  0.32248542  0.27137102  0.26860603  0.23608582
+##  [5,]  0.08994880 -0.0711626285  0.06170340  0.04928496  0.11044483 -0.08715448
+##  [6,]  0.94736462  0.0555633577  0.36548035  0.26912973 -0.05885467  0.24297023
+##  [7,]  0.05556336  0.9456537403  0.03898737  0.03090080  0.06764662 -0.08985877
+##  [8,]  0.36548035  0.0389873715  0.45894241  0.35830804  0.38361631  0.32238760
+##  [9,]  0.26912973  0.0309008005  0.35830804  0.29376701  0.29262202  0.27007937
+## [10,] -0.05885467  0.0676466194  0.38361631  0.29262202  0.91095157  0.18493073
+## [11,]  0.24297023 -0.0898587695  0.32238760  0.27007937  0.18493073  0.33541453
+## 
+## $ineqx0
+## [1] 12
+## 
+## $nfuneval
+## [1] 485
+## 
+## $outer.iter
+## [1] 2
+## 
+## $elapsed
+## Time difference of 0.162123 secs
+## 
+## $vscale
+##  [1] 1 1 1 1 1 1 1 1 1 1 1 1</code></pre>
+<pre class="r"><code># Retrieve the optimal lot purchase fractions 
+F_star &lt;- OO$par</code></pre>
+</div>
+<div id="more-optimization-with-constraints" class="section level2">
+<h2>More Optimization With Constraints</h2>
+<p>Usually, there is more than one thing that enters the decision-making process of a policy maker when discussing environmental coservation. For example, what if there is more than one species that is affected by the conservation efforts and we still don’t know what fraction of each lot to buy? You guessed it! Optimization! Following a similar approach to last week, let’s create some values to turn the previous analysis into a two-species problem:</p>
+<pre class="r"><code># Simulate data for the new species &quot;species b&quot;
+hp_b = sample(0:2,N,replace=T) # Habitat potential for species b
+
+THP_b = sum(hp_b) # Total habitat potential when all lots are purchased for species b.
+
+alpha_b = 1/(THP_b)^.5 # Scaling factor so the probability adds to one.
+
+# rename vectors to differentiate between species 
+alpha_a = alpha
+
+hp_a = hp</code></pre>
+<p>Next, we have to update our survival prob function and create an additional objective function that takes into account both species and how important we deem one or the other. Let’s define <span class="math inline">\(0\leq w\leq 1\)</span> as the weight or level of importance given to species a, and by default <span class="math inline">\(1-w\)</span> as the weight given to species b, accordingly. Our new objective function is the weighted sum of the probability of survival of both species for any given fraction of land, <span class="math inline">\(\pmb{F}\)</span>, and weight of a species, <span class="math inline">\(w\)</span>. In R, we can code this as follows:</p>
+<pre class="r"><code># since we have two species now hp and alpha will be changing 
+# We need to make adjustments for this in the arguments of our function
+updated.surv.prob = function(F, hp, alpha){ 
+  
+  PS = -alpha*(F%*%hp)^.5
+  
+  as.numeric(PS)
+
+  } 
+
+# Creating an objective function that focuses on 
+# the fraction (ff) of land purchased as a changing argument 
+# but also includes our ideas about the importance of a species (50-50 currently).
+obj.agg.surv = function(ff){
+    w=.5 # importance of the species
+    PS_A = updated.surv.prob(ff,hp_a,alpha_a) # Estimate probability of survival for species a
+    PS_B = updated.surv.prob(ff,hp_b,alpha_b) # Estimate probability of survival for species b
+    WPS = w*PS_A + (1-w)*PS_B # Weighted sum of survival probabilities
+    as.numeric(WPS)
+}</code></pre>
+<pre class="r"><code>agg.OO &lt;- solnp(F, # Starting values
+      fun = obj.agg.surv, # Function to minimize
+      ineqfun = total.cost, # Parameters for the inequality constraint
+      ineqUB = B, # Upper bound of inequality
+      ineqLB = 0, # Lower bound of inequality
+      LB = rep(0,N), # Lower bound for decision variables, must be a vector 
+      UB = rep(1,N)) # Upper bound for decision variables, must be a vector as well</code></pre>
+<pre><code>## 
+## Iter: 1 fn: -0.5809   Pars:  2.356e-07 1.105e-07 1.377e-04 3.335e-01 3.964e-11 3.716e-09 3.332e-01 1.000e+00 5.954e-08 3.068e-08
+## Iter: 2 fn: -0.5809   Pars:  2.354e-07 1.104e-07 1.377e-04 3.335e-01 2.482e-11 3.697e-09 3.332e-01 1.000e+00 5.947e-08 3.063e-08
+## solnp--&gt; Completed in 2 iterations</code></pre>
+<pre class="r"><code># Print the results
+agg.OO</code></pre>
+<pre><code>## $pars
+##  [1] 2.353526e-07 1.103907e-07 1.376920e-04 3.334712e-01 2.481737e-11
+##  [6] 3.697159e-09 3.331954e-01 1.000000e+00 5.946897e-08 3.063347e-08
+## 
+## $convergence
+## [1] 0
+## 
+## $values
+## [1] -0.03162278 -0.58094749 -0.58094749
+## 
+## $lagrange
+##             [,1]
+## [1,] -0.01936492
+## 
+## $hessian
+##               [,1]        [,2]         [,3]        [,4]        [,5]
+##  [1,]  0.002700047 -0.01051727  0.001747447 -0.01266830 -0.01232028
+##  [2,] -0.010517275  0.34795399 -0.367052923  0.14573199  0.14989033
+##  [3,]  0.001747447 -0.36705292  0.593439328 -0.06105549 -0.05835987
+##  [4,] -0.012668304  0.14573199 -0.061055492  0.17749717  0.11101147
+##  [5,] -0.012320277  0.14989033 -0.058359867  0.11101147  0.18731343
+##  [6,] -0.009960680  0.05729483  0.004403128  0.10377560  0.05501313
+##  [7,] -0.003094829 -0.03950841  0.096224464  0.03170348  0.04975280
+##  [8,] -0.024784372  0.28710895 -0.116757577  0.26241600  0.29659954
+##  [9,] -0.016667521  0.22410561 -0.097953018  0.19627378  0.23494056
+## [10,] -0.023465092  0.29148213 -0.120916793  0.24293039  0.29970068
+## [11,] -0.014687862 -0.02948602  0.132170914  0.13609609  0.15647946
+##               [,6]         [,7]        [,8]        [,9]       [,10]       [,11]
+##  [1,] -0.009960680 -0.003094829 -0.02478437 -0.01666752 -0.02346509 -0.01468786
+##  [2,]  0.057294827 -0.039508406  0.28710895  0.22410561  0.29148213 -0.02948602
+##  [3,]  0.004403128  0.096224464 -0.11675758 -0.09795302 -0.12091679  0.13217091
+##  [4,]  0.103775597  0.031703480  0.26241600  0.19627378  0.24293039  0.13609609
+##  [5,]  0.055013126  0.049752803  0.29659954  0.23494056  0.29970068  0.15647946
+##  [6,]  0.931679995 -0.056136579  0.13786888  0.11036235  0.06933717 -0.07141519
+##  [7,] -0.056136579  0.915659558  0.08971003  0.07603730  0.08654172 -0.15442412
+##  [8,]  0.137868878  0.089710030  0.56338983  0.43817725  0.55613269  0.30490866
+##  [9,]  0.110362354  0.076037300  0.43817725  0.36112252  0.43032965  0.24639609
+## [10,]  0.069337170  0.086541717  0.55613269  0.43032965  0.57073639  0.28113101
+## [11,] -0.071415185 -0.154424122  0.30490866  0.24639609  0.28113101  0.75753044
+## 
+## $ineqx0
+## [1] 12
+## 
+## $nfuneval
+## [1] 422
+## 
+## $outer.iter
+## [1] 2
+## 
+## $elapsed
+## Time difference of 0.04966307 secs
+## 
+## $vscale
+##  [1] 1 1 1 1 1 1 1 1 1 1 1 1</code></pre>
+<p>Using this setup, you can conduct the analysis for any value of <span class="math inline">\(w\)</span> we may want, including single-species cases only (w =1 or w=0). To conduct the optimization process for these new specifications, all we need to do is update the objective function with the new values and run the optimizer. We would do this for each value of w and save the results. I will let you figure out how to do this.</p>
+</div>
+<div id="further-analysis" class="section level2">
+<h2>Further Analysis</h2>
+<p>We can also evaluate our optimization results from last week (F_star) as follows:</p>
+<pre class="r"><code># Calculate aggregated survival probabilty over any combination of F and w
+agg.surv &lt;- function(F,w,hp_a,hp_b,alpha_a,alpha_b){
+  PS_a &lt;- updated.surv.prob(F,hp_a,alpha_a) # Probability of survival for species a
+  PS_b &lt;- updated.surv.prob(F,hp_b,alpha_b) # Probability of survival for species b
+  APS &lt;- w*PS_a + (1-w)*PS_b # weighted sum
+}
+
+# Aggregate probability of survival if we consider the fractions from last week
+# and only care about species a,thus w=1
+AS = agg.surv(F_star,w=1,hp_a,hp_b,alpha_a,alpha_b)
+AS</code></pre>
+<pre><code>## [1] -0.6436503</code></pre>
+<pre class="r"><code># All we care about is species b, thus w=0.
+BS = agg.surv(F_star,w=0,hp_a,hp_b,alpha_a,alpha_b) 
+BS</code></pre>
+<pre><code>## [1] -0.3779645</code></pre>
+<pre class="r"><code># We care equally about both probabilities, thus w=.5.
+ABS = agg.surv(F_star,w=.5,hp_a,hp_b,alpha_a,alpha_b) 
+ABS</code></pre>
+<pre><code>## [1] -0.5108074</code></pre>
+<p>These are the total probabilities of survival given last week’s choices of what fractions (F or ff) of lots to purchase and our ideas on how important the survival of one species is over another.</p>
+</div>
