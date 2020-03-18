@@ -1,0 +1,344 @@
+---
+date: ' 2020-03-18T15:36:24 '
+draft: false
+linktitle: Lab 2
+menu: 
+     MES623Econ:
+          parent: Lab Material
+          weight: 2
+title:   Data Types, Functions, and Loops
+type: docs
+weight: 2
+output:
+  blogdown::html_page:
+    toc: true
+---
+
+
+<div id="TOC">
+<ul>
+<li><a href="#data-types-vectors-and-matrices">Data Types: Vectors and Matrices</a><ul>
+<li><a href="#vectors">Vectors</a></li>
+<li><a href="#exercise-1"><strong>Exercise 1:</strong></a></li>
+</ul></li>
+<li><a href="#matrices">Matrices</a><ul>
+<li><a href="#exercise-2"><strong>Exercise 2:</strong></a></li>
+<li><a href="#math-with-matrices">Math with matrices</a></li>
+</ul></li>
+<li><a href="#functions">Functions</a><ul>
+<li><a href="#defining-function-defaults-for-testing">Defining Function Defaults for Testing</a></li>
+<li><a href="#exercise-3"><strong>Exercise 3:</strong></a></li>
+</ul></li>
+<li><a href="#for-loops">For Loops</a></li>
+<li><a href="#all-together"><strong>All Together</strong></a><ul>
+<li><a href="#exercise-4"><strong>Exercise 4:</strong></a></li>
+</ul></li>
+<li><a href="#additional-resources">Additional Resources</a></li>
+</ul>
+</div>
+
+<div id="data-types-vectors-and-matrices" class="section level2">
+<h2>Data Types: Vectors and Matrices</h2>
+<div id="vectors" class="section level3">
+<h3>Vectors</h3>
+<p>Vectors are one-dimensional and can be created in many ways.
+If you just want numbers from one to 10, create the object “vec” and use the colon “:” to indicate “to.” This will automatically create one-digit increments.
+If you want to control the increments, use the function seq(). The arguments are: from, to, and by.<strong>Which argument controls the increment?</strong></p>
+<pre class="r"><code>vec = 1:10
+vec</code></pre>
+<pre><code>##  [1]  1  2  3  4  5  6  7  8  9 10</code></pre>
+<pre class="r"><code>vec_1 = seq(from=1,to=10,by=.5)
+vec_1</code></pre>
+<pre><code>##  [1]  1.0  1.5  2.0  2.5  3.0  3.5  4.0  4.5  5.0  5.5  6.0  6.5  7.0  7.5  8.0
+## [16]  8.5  9.0  9.5 10.0</code></pre>
+<p>What if we wanted the same number multiple times? That’s easy–, we just use the rep() function. The basic arguments for this function are as follows: “x” (the object/number we are repeating),“times”“, and”each". What if we want to repeat the number 1, 10 times?</p>
+<pre class="r"><code>vec_2 = rep(x = 1,times = 10)
+vec_2</code></pre>
+<pre><code>##  [1] 1 1 1 1 1 1 1 1 1 1</code></pre>
+<p>Say we want to combine multiple vectors together. We use the “c()” function.</p>
+<pre class="r"><code>vec_12 = c(vec_1,vec_2)
+vec_12 </code></pre>
+<pre><code>##  [1]  1.0  1.5  2.0  2.5  3.0  3.5  4.0  4.5  5.0  5.5  6.0  6.5  7.0  7.5  8.0
+## [16]  8.5  9.0  9.5 10.0  1.0  1.0  1.0  1.0  1.0  1.0  1.0  1.0  1.0  1.0</code></pre>
+<pre class="r"><code># Alternatively
+vec_12_alt = c(seq(from=1,to=10,by=.5),rep(1,10))
+vec_12_alt</code></pre>
+<pre><code>##  [1]  1.0  1.5  2.0  2.5  3.0  3.5  4.0  4.5  5.0  5.5  6.0  6.5  7.0  7.5  8.0
+## [16]  8.5  9.0  9.5 10.0  1.0  1.0  1.0  1.0  1.0  1.0  1.0  1.0  1.0  1.0</code></pre>
+</div>
+<div id="exercise-1" class="section level3">
+<h3><strong>Exercise 1:</strong></h3>
+<p>Write the code to replicate the sequence 1:4 (by 1’s), 3 times.</p>
+<pre><code>##  [1] 1 2 3 4 1 2 3 4 1 2 3 4</code></pre>
+<p>Want this to be ordered With three 1’s, three 2’s, etc.? Use the rep() function, the generic vector creation with a colon, and the argument “each = 3.”
+<strong>Note:</strong> We can also use these functions for character strings (ex: rep(“dog”, times = 4).</p>
+<pre class="r"><code>vec_4 = rep(1:4, each = 3)
+vec_4</code></pre>
+<pre><code>##  [1] 1 1 1 2 2 2 3 3 3 4 4 4</code></pre>
+<p>You can also use basic mathematical operations on vectors but only if they are numeric and the same length. Uncomment the bad code to see the errors you may get.</p>
+<pre class="r"><code>vec</code></pre>
+<pre><code>##  [1]  1  2  3  4  5  6  7  8  9 10</code></pre>
+<pre class="r"><code>vec_2</code></pre>
+<pre><code>##  [1] 1 1 1 1 1 1 1 1 1 1</code></pre>
+<pre class="r"><code>vec_add = vec+vec_2
+vec_add</code></pre>
+<pre><code>##  [1]  2  3  4  5  6  7  8  9 10 11</code></pre>
+<pre class="r"><code># This won&#39;t work ... why not?
+# vec_bad = vec_2+vec_12
+# vec_bad
+
+# This won&#39;t work ... why not?
+# vec_d = rep(&quot;dog&quot;, times = 4)
+# vec_bad_1 = vec_d + vec_2
+# vec_bad_1</code></pre>
+<p><strong>ProTip:</strong> Since a vector has only one dimension to index it (determine what’s in a specific position), you only need square brackets. Ex: vec_add[6] will return the value 7.</p>
+</div>
+</div>
+<div id="matrices" class="section level2">
+<h2>Matrices</h2>
+<p>Matrices are multi-dimensional. We can create a matrix and put anything we want into it by using the matrix() function and it’s basic arguments: data, nrow, and ncol. Let’s put 1’s in a 3 x 2 matrix.</p>
+<pre class="r"><code>mat_1 = matrix(data =1, nrow = 3, ncol = 2)
+mat_1 </code></pre>
+<pre><code>##      [,1] [,2]
+## [1,]    1    1
+## [2,]    1    1
+## [3,]    1    1</code></pre>
+<p><strong>Note:</strong> If you forget the “data =” in the function R will fill in your matrix with NAs. Try it for yourself.</p>
+<p>We can add new info to our matrix, either by the columns using cbind() or by the row using rbind(). Here is an example of adding an additional row to our established matrix.</p>
+<pre class="r"><code>mat_new = rbind(mat_1,rep(2,2))
+mat_new</code></pre>
+<pre><code>##      [,1] [,2]
+## [1,]    1    1
+## [2,]    1    1
+## [3,]    1    1
+## [4,]    2    2</code></pre>
+<div id="exercise-2" class="section level3">
+<h3><strong>Exercise 2:</strong></h3>
+<p>We can find a specific entry in our matrix by indexing using square brackets, the row number, a comma, and then the column number. Let’s figure out what is in the 4rd row and the 2nd column.</p>
+</div>
+<div id="math-with-matrices" class="section level3">
+<h3>Math with matrices</h3>
+<p>You can apply mathematical operations accross whole matrices. Example: Let’s multiply each element by a scalar of 3.</p>
+<pre class="r"><code>three_mat = mat_new * 3
+three_mat</code></pre>
+<pre><code>##      [,1] [,2]
+## [1,]    3    3
+## [2,]    3    3
+## [3,]    3    3
+## [4,]    6    6</code></pre>
+<p>Let’s kick it up a notch! What if we have two matrices that we want to multiply together? We can use the matrix operator " %*% ": Click the link to learn more about <strong><a href="https://www.statmethods.net/advstats/matrix.html">matrix alebra</a></strong>.</p>
+<pre class="r"><code>mat_2 = matrix(4,2,2)
+mat_2</code></pre>
+<pre><code>##      [,1] [,2]
+## [1,]    4    4
+## [2,]    4    4</code></pre>
+<pre class="r"><code># remind us of what mat_1 was
+mat_1</code></pre>
+<pre><code>##      [,1] [,2]
+## [1,]    1    1
+## [2,]    1    1
+## [3,]    1    1</code></pre>
+<pre class="r"><code>mat_12 = mat_1%*%mat_2
+mat_12</code></pre>
+<pre><code>##      [,1] [,2]
+## [1,]    8    8
+## [2,]    8    8
+## [3,]    8    8</code></pre>
+<pre class="r"><code># This won&#39;t work ... why not?
+# three_mat%*%mat_1</code></pre>
+<p><strong>Note:</strong> To multiply matrices make sure that the the number of columns in the 1st matrix equals the number of rows in the 2nd matrix. Use one of the functions we learned from last week to check the matrix dimension (hint, hint).</p>
+<p>Other data types such as lists and arrays exist. list() can have more than one type of data (i.e., numerics and character strings). Arrays have a dimension of 3 but all layers have to have the same dimensions.</p>
+<pre class="r"><code># Creating a List
+pop_parms_list &lt;- list(&quot;r&quot; = 2.5, &quot;dependent&quot; = TRUE, &quot;init.pop&quot; = seq(0,1000,100))
+pop_parms_list</code></pre>
+<pre><code>## $r
+## [1] 2.5
+## 
+## $dependent
+## [1] TRUE
+## 
+## $init.pop
+##  [1]    0  100  200  300  400  500  600  700  800  900 1000</code></pre>
+<pre class="r"><code># Creating an array
+pop1 = matrix(1:6, nrow = 3 , ncol = 2) # matrix 1 to put in an array
+pop2 = matrix(1:6, nrow = 3 , ncol = 2) # matrix 2 to put in an array
+pops_array = array(c(pop1,pop2),dim = c(3,2,2)) # 3 rows, 2 columns, 2 entries
+pops_array </code></pre>
+<pre><code>## , , 1
+## 
+##      [,1] [,2]
+## [1,]    1    4
+## [2,]    2    5
+## [3,]    3    6
+## 
+## , , 2
+## 
+##      [,1] [,2]
+## [1,]    1    4
+## [2,]    2    5
+## [3,]    3    6</code></pre>
+</div>
+</div>
+<div id="functions" class="section level1">
+<h1>Functions</h1>
+<p>Just like matrix(), header(), summary(), dim(), etc. are all functions, we can make our own functions.
+Why do we make functions?</p>
+<p>1.There is no available function to do what you want to do.</p>
+<p>2.Work smarter – not harder! You have a task that needs to be repeated, and you do not want to keep writing the same lines of code over and over again.</p>
+<p>Functions must have a name and arguments, and they must return something. Arguments are the inputs you plan to use in your function. We often use the function return() to have our functions “print” out to the console or pass something on to another function. Example layout:</p>
+<pre class="r"><code>func.name = function(arg1,arg2) 
+  { # bracket to start function
+  
+  # code to do something, here
+  
+  return (something)
+
+  } # bracket to end function</code></pre>
+<p>Let’s do a simple matrix multiplication function.</p>
+<pre class="r"><code>math.func = function (matrix.name,scalar) # 2 arguments to do something with
+  {  
+  
+  new.matrix = matrix.name * scalar # code to do something with those arguments
+  
+  return(new.matrix) # code to print something 
+  
+  }# end function</code></pre>
+<p>Let’s test it out! We need to create a matrix and then tell our function what the name of the matrix is and what value the scaler should be.</p>
+<pre class="r"><code>mat.use = matrix(3,4,5)
+math.func(matrix.name = mat.use, scalar = 2)</code></pre>
+<pre><code>##      [,1] [,2] [,3] [,4] [,5]
+## [1,]    6    6    6    6    6
+## [2,]    6    6    6    6    6
+## [3,]    6    6    6    6    6
+## [4,]    6    6    6    6    6</code></pre>
+<p>Look! It returned our “new.matrix”</p>
+<div id="defining-function-defaults-for-testing" class="section level3">
+<h3>Defining Function Defaults for Testing</h3>
+<p>One day you may have a really complex function and you just want to make sure it works, without always putting in arguments to run it. Well you can set defaults for your arguments when you create your functions. Then to run it quickly all you need is func.name(), R will do the rest. Lets try it out with our previous function.</p>
+<pre class="r"><code>math.func = function (matrix.name = matrix(3,4,5) ,scalar = 1) 
+  { # 2 arguments to do something with ... notice I now have defaults in place  
+  
+  new.matrix = matrix.name * scalar # code to do something with those arguments
+  
+  return(new.matrix) # code to print something 
+  
+  }
+
+# Now we can just test to see if it works without putting in arguments, 
+# just by typing the function name and parentheses
+math.func()</code></pre>
+<pre><code>##      [,1] [,2] [,3] [,4] [,5]
+## [1,]    3    3    3    3    3
+## [2,]    3    3    3    3    3
+## [3,]    3    3    3    3    3
+## [4,]    3    3    3    3    3</code></pre>
+</div>
+<div id="exercise-3" class="section level3">
+<h3><strong>Exercise 3:</strong></h3>
+<p>Let’s create our own function to determine the final grade for a student in this class. Make the default values so that the final grade is 100. Remember to test your function.</p>
+<p>Things to think about:</p>
+<ol style="list-style-type: decimal">
+<li><p>What are the arguments/inputs?</p></li>
+<li><p>What is the task we want to accomplish or calculation to be made using these arguments?</p></li>
+<li><p>What do we expect our function to return?</p></li>
+</ol>
+</div>
+</div>
+<div id="for-loops" class="section level1">
+<h1>For Loops</h1>
+<p>There are various types of loops but “for” loops are most common. You use loops when you want to do something iteratively. For loops have the following structure:</p>
+<pre class="r"><code>for (i in 0:5) # a variable and range of values it will take ... &quot;x&quot; is not a good variable 
+  { # a bracket to start
+   
+  #some cacluation or function to do something
+  
+  } # a bracket to end the for loop</code></pre>
+<p>Here “i” sequentially becomes a number from 0 to 5 and is used in each iteration of the loop.</p>
+<p>Let’s try a simple example where we want to add i to 5. Our output should consist of a list of values. We’ll use the print() function so we can see what the loop is doing.</p>
+<pre class="r"><code>for (i in 0:5) 
+  {
+  x = i + 5 # Do something to i, iteratively
+  
+  print(x) # see what happens if you take this out
+  
+  # I like to print what I am doing inside of a loop ... 
+  # uncomment the next line to see what it does
+  
+  # cat(paste(&quot;i= &quot;, i, &quot;and i + 5 =&quot;, x,&quot;\n&quot;)) 
+  
+  } # end for loop</code></pre>
+<pre><code>## [1] 5
+## [1] 6
+## [1] 7
+## [1] 8
+## [1] 9
+## [1] 10</code></pre>
+<p>Lets tell R to do something different in the loop if i = 3. We do this by using an “if” statement which can be interpreted as “if something is true, do this.” Because this is a logical statement, we must use logical operators in our if statment (i.e. “==”, “!=”). We can also use “else” to succinctly tell R how to continue but this is not always necessary.</p>
+<pre class="r"><code>for (i in 0:5) 
+  {
+ 
+  x = i + 5
+  
+  # but ...
+  if(i == 3) {x = &quot;NULL&quot;}  # our new if statement
+  
+  cat(paste(&quot;i= &quot;, i, &quot;and i + 5 =&quot;, x,&quot;\n&quot;)) 
+
+  } # end for loop</code></pre>
+<pre><code>## i=  0 and i + 5 = 5 
+## i=  1 and i + 5 = 6 
+## i=  2 and i + 5 = 7 
+## i=  3 and i + 5 = NULL 
+## i=  4 and i + 5 = 9 
+## i=  5 and i + 5 = 10</code></pre>
+<pre class="r"><code># Alternatively
+for (i in 0:5) 
+  {
+  
+  if(i == 3) {x = &quot;NULL&quot;} else {x = i + 5} # our new if else statement
+  
+  cat(paste(&quot;i= &quot;, i, &quot;and i + 5 =&quot;, x,&quot;\n&quot;)) 
+  
+  } # end for loop</code></pre>
+<pre><code>## i=  0 and i + 5 = 5 
+## i=  1 and i + 5 = 6 
+## i=  2 and i + 5 = 7 
+## i=  3 and i + 5 = NULL 
+## i=  4 and i + 5 = 9 
+## i=  5 and i + 5 = 10</code></pre>
+<p>Sometimes we only want to go to a certain point in the loop and then tell R to break out of the loop. Let’s tell R to breakout of the loop when x = 7 using the command “break.”</p>
+<pre class="r"><code>for (i in 0:5) 
+  {
+  
+  x = i + 5 # Do something to i, iteratively
+  
+  if(x &gt; 7) {break} # Here is that &quot;break&quot; command
+  
+  cat(paste(&quot;i= &quot;, i, &quot;and i + 5 =&quot;, x,&quot;\n&quot;)) 
+  
+  } # end loop</code></pre>
+<pre><code>## i=  0 and i + 5 = 5 
+## i=  1 and i + 5 = 6 
+## i=  2 and i + 5 = 7</code></pre>
+</div>
+<div id="all-together" class="section level1">
+<h1><strong>All Together</strong></h1>
+<div id="exercise-4" class="section level3">
+<h3><strong>Exercise 4:</strong></h3>
+<p>Read in the csv file “StudentGrades”. Find the final grade for each student using our mygrades function and a loop. Hint: Some indexing will need to take place.Print out a statement detailing each student’s final class grade using a combination of the cat() and paste() functions. Here is an example output.</p>
+<pre><code>## Student 1 has a grade of  83 
+## Student 2 has a grade of  73 
+## Student 3 has a grade of  69.5 
+## Student 4 has a grade of  58 
+## Student 5 has a grade of  68 
+## Student 6 has a grade of  82.5 
+## Student 7 has a grade of  55 
+## Student 8 has a grade of  72</code></pre>
+</div>
+</div>
+<div id="additional-resources" class="section level1">
+<h1>Additional Resources</h1>
+<p><a href="http://edrub.in/ARE212/resources.html">Ed Rubin’s Econometrics Course Notes</a></p>
+<p><a href="https://www.statmethods.net/">Quick-R By DataCamp</a></p>
+<p>Google!</p>
+</div>
